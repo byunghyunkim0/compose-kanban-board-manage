@@ -1,40 +1,206 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM).
+# 2단계 - 칸반 보드 생성(보드)
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## 기능 요구 사항
 
-### Build and Run Android Application
+- 디자인 시안을 참고하여 칸반 보드를 구현한다.
+- 새 태스크 생성 버튼에 모달을 연결한다.
+- 각 상태별 태스크 개수를 트래킹한다.
+    - 상태(To-Do, In Progress, Done)별 태스크 개수가 노출된다.
+    - 전체 할 일 중 완료된 일의 비율을 계산한다.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+## 구현할 기능 및 명세 정리
 
-### Build and Run Desktop (JVM) Application
+### 1. 칸반 보드 헤더 영역
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+- [x] 요구사항 분석: 보드의 제목과 현재 진행률(완료율)을 표시하며, 새로운 태스크를 추가할 수 있는 버튼을 제공합니다.
+- [x] UI 명세:
+    - 배경색: 흰색
+    - 패딩: 상하 17px, 좌우 24px
+    - 보드 제목: 텍스트 "칸반 보드", 폰트 사이즈 24px, 굵기 Bold
+    - 완료율 텍스트: 폰트 사이즈 14px, 색상 #6A7282 (예: "전체 완료율 33%")
+    - 진행도 바: 완료율 수치에 따라 진행 상태를 시각적으로 표시 (Progress Bar)
+    - 생성 버튼: "새 태스크 생성", 배경색 #4F39F6, 글자색 흰색, 곡률 10px
+
+### 2. 칸반 보드 본문 영역
+
+- [x] 요구사항 분석: 태스크의 상태에 따라 3개의 컬럼(To-Do, In Progress, Done)으로 구분하여 카드를 배치합니다.
+- [x] UI 명세:
+    - 컬럼 패딩: 17px
+    - To Do 컬럼: 상단 바 #155DFC, 본문 배경 #EFF6FF
+    - In Progress 컬럼: 상단 바 #E17100, 본문 배경 #FFFBEB
+    - Done 컬럼: 상단 바 #00A63E, 본문 배경 #F0FDF4
+    - 레이아웃: 화면 크기에 따라 가로 스크롤 또는 적응형 배치 지원
+
+### 3. 상태 및 비즈니스 로직
+
+- [x] 상태 분류: `KanbanStatus` 값에 따른 필터링 및 컬럼별 배치
+- [x] 완료율 계산: `(Done 상태 태스크 수 / 전체 태스크 수) * 100` (전체 0개일 시 0% 처리)
+- [x] 태스크 생성: 모달의 '생성' 버튼 클릭 시 새로운 `KanbanCard` 객체 생성 및 리스트 추가
+
+### 4. UI 테스트
+
+- [x] 모달 연결: '새 태스크 생성' 버튼 클릭 시 Dialog 오픈 확인
+- [x] 폼 초기화: Dialog를 닫고 다시 열었을 때, 이전 입력값이 사라지고 기본값으로 복구되는지 확인
+- [x] 스낵바 알림: 카드 추가 성공 시 하단에 스낵바 생성 확인
+- [x] 스낵바 소멸: 노출 후 일정 시간이 경과하면 자동으로 화면에서 사라지는지 확인
+
+# 1단계 - 칸반 보드 생성(태스크 생성 모달)
+
+## 기능 요구 사항
+
+- 디자인 시안을 참고하여 새 태스크 생성 모달을 구현한다.
+- 필수 입력 란과 선택 입력 란을 구분한다.
+    - 필수 입력: 제목, 상태, 담당자
+    - 선택 입력: 설명, 태그
+- 상태와 담당자는 첫 번째 항목으로 기본 선택되어 있고, 한 항목만 선택 가능하다.
+- 유효성 검사가 실패하면 생성 버튼을 누를 수 없다.
+
+## 구현할 기능 및 명세 정리
+
+### 1. 모달 헤더 영역
+
+- 요구사항 분석: 모달의 제목과 닫기 기능을 제공하며, 바디 영역과 구분되는 경계선이 존재합니다.
+- UI 명세:
+    - 여백: 상하 28px, 좌우 24px
+    - 구분선: 하단 테두리 1px, 색상 lightGray
+    - 제목 텍스트: "새 태스크 생성", 폰트 사이즈 20px, 굵기 Semi Bold
+    - 닫기 버튼: 아이콘 크기 20px
+
+### 2. 제목 입력 필드 (필수)
+
+- 요구사항 분석: 태스크의 핵심 제목을 입력받는 필드로, 필수 입력 항목임을 표시합니다.
+- UI 명세:
+    - 라벨: "제목 *", 폰트 사이즈 14px
+    - 입력창: 폰트 사이즈 16px, 내부 상하 여백 4px, 시작 여백 16px
+    - 플레이스홀더: "태스크 제목을 입력하세요"
+    - 내부 간격: 라벨과 입력창 사이 8px
+
+### 3. 설명 및 태그 입력 필드 (선택)
+
+- 요구사항 분석: 태스크에 대한 상세 설명과 쉼표(,)로 구분된 태그를 입력받는 선택 항목입니다.
+- UI 명세:
+    - 설명 입력창: 폰트 사이즈 16px, 플레이스홀더 "태스크에 대한 자세한 설명을 입력하세요"
+    - 태그 입력창: 폰트 사이즈 16px, 플레이스홀더 "태그를 쉼표로 구분하여 입력하세요 (예: 버그, 긴급)"
+    - 태그 부연 설명: 폰트 사이즈 12px, 상단 여백 4px, 좌우 여백 16px
+    - 공통 간격: 라벨과 입력창 사이 8px
+
+### 4. 상태 및 담당자 선택 필드 (필수)
+
+- 요구사항 분석: 태스크의 진행 상태와 담당 크루를 선택합니다. 기본값이 지정되어야 하며 한 명(개)만 선택 가능합니다.
+- UI 명세:
+    - 상태 버튼: 너비 200px, 높이 52px, 곡률 10px, 버튼 간 간격 12px, 텍스트 중앙 정렬
+    - 담당자 버튼: 너비 200px, 높이 68px, 내부 여백 12px
+        - 프로필 이미지: 크기 24px
+        - 담당자 이름: 폰트 사이즈 14px, 최대 1줄(초과 시 말줄임 처리)
+        - 이미지와 이름 간격: 12px
+
+### 5. 액션 버튼 영역
+
+- 요구사항 분석: 입력 완료(생성) 또는 취소를 결정하는 영역입니다. 필수 값이 누락되거나 유효성 검사에 실패하면 생성 버튼이 비활성화됩니다.
+- UI 명세:
+    - 구분선: 상단 테두리 1px, 색상 lightGray
+    - 버튼 공통: 너비 68px, 높이 44px, 곡률 10px
+    - 취소 버튼: 배경색 하얀색, 글씨 검은색
+    - 생성 버튼: 배경색 파란색, 글씨 하얀색
+    - 유효성 검사: 필수 항목(제목, 상태, 담당자) 미입력 시 생성 버튼 클릭 불가 처리 (Disabled 상태)
+
+### 6. 유효성 검증
+
+- 요구사항 분석: 필수 입력 역영에서 입력이 누락되거나 유효성 검사에 실패하면 에러 문구가 출력된다.
+- UI 명세:
+    - 구분선: 색상 Red
+    - 입력 텍스트: 색상 Red, Trailing Icon 크기 20px
+    - 에러 문구 텍스트: 색상 Red
+
+# 레벨2 - 칸반 보드 태스크(리팩터링)
+
+## 요구 사항
+
+비즈니스 로직과 UI 로직을 분리하고, 안정적인 사용자 경험을 위한 예외 케이스 처리(Fallback)를 적용한다.
+
+## 구현 기능 목록
+
+### 단위 테스트 시나리오
+
+1. 비정상적인 입력값
+    - 제목(`title`)이 비어 있거나 공백인 경우, 예외가 발생
+    - 담당자 이름(`crewName`)이 비어 있거나 공백인 경우, 예외가 발생
+
+### UI 테스트 시나리오
+
+1. 데이터 노출 검증
+    - 제목, 설명, 태그, 담당자 정보가 모두 있을 때 각 요소가 화면에 정확히 렌더링되는지 확인
+2. 태그 표시 개수 제한
+    - 6개 이상의 태그가 전달될 때, 리스트의 상위 5개만 필터링되어 전달되는지 확인
+3. 태그 이름 절삭
+    - 5글자를 초과하는 태그 이름이 입력되면 상위 5글자만 추출하여 사용하는지 확인
+4. 조건부 렌더링
+    - 설명(`content`)이 비어 있는 경우, 해당 텍스트 영역이 UI 레이아웃을 차지하지 않는지 확인
+    - 태그 리스트가 비어 있는 경우, 태그 영역 전체가 렌더링되지 않는지 확인
+5. 텍스트 제약 조건 (Ellipsis & MaxLines)
+    - 제목이 1줄 영역을 초과할 때 말줄임표(...)가 표시되는지 확인
+    - 설명이 2줄 영역을 초과할 때 말줄임표(...)가 표시되는지 확인
+    - 담당자 이름이 1줄 영역을 초과할 때 말줄임표(...)가 표시되는지 확인
+6. 이미지 예외 처리
+    - 담당자 프로필 이미지 정보가 없는 경우, 기본 아이콘이 노출되는지 확인
+
+# 레벨1 - 칸반 보드 태스크(카드)
+
+## 미션 목표
+
+[디자인 시안](https://www.figma.com/design/3aBG3UfkTwmHM8BnPyahtT/8%EA%B8%B0-Android-%EB%A0%88%EB%B2%A81-%EB%AF%B8%EC%85%98-%EB%94%94%EC%9E%90%EC%9D%B8?node-id=0-1&p=f)
+을 참고하여 칸반 보드용 태스크 카드를 구현합니다.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 구현할 기능 및 명세 정리
+
+리뷰어분들이 어떤 의도로 각 컴포넌트를 설계하고 속성을 지정했는지 쉽게 파악하실 수 있도록, 초기 요구사항과 이를 바탕으로 구체화한 컴포넌트 명세로 정리했습니다.
+
+### 1. 카드 프레임
+
+* 요구사항 분석: 배경이 하얀색이고 곡률과 외곽선이 존재하는 카드의 뼈대입니다.
+* UI 명세:
+    - 배경색: 하얀색
+    - 테두리: 1px, 색상 gray
+    - 모서리 곡률: 10px
+    - 내부 여백: 17px
+    - 내부 컴포넌트 간 간격: 12px
+
+### 2. 카드 제목
+
+* 요구사항 분석: 카드의 제목을 표시하며, 길이가 길어 영역을 벗어나면 말줄임 처리를 합니다.
+* UI 명세:
+    - 텍스트 속성: 폰트 사이즈 16, 굵기 Bold
+    - 줄 수 제한: 최대 1줄
+    - 초과 처리: 말줄임
+
+### 3. 카드 본문
+
+* 요구사항 분석: 카드의 상세 본문을 표시합니다. 내용이 없을 경우 생략 가능하며, 길이가 길면 최대 2줄까지만 노출하고 말줄임 처리합니다.
+* UI 명세:
+    - 상태 처리: 데이터가 없으면 렌더링 생략
+    - 텍스트 속성: 폰트 사이즈 14px, 색상 DarkGray
+    - 줄 수 제한: 최대 2줄
+    - 초과 처리: 말줄임
+
+### 4. 태그 영역
+
+* 요구사항 분석: 카드와 연관된 태그들을 표시합니다. 태그 당 글자 수는 최대 5자로 제한합니다. 태그는 최대 5개까지만 노출하며, 데이터가 없을 경우 렌더링을 생략합니다.
+* UI 명세:
+    - 상태 처리: 데이터가 없으면 렌더링 생략
+    - 데이터 제한: 최대 5개 노출
+    - 스타일: 배경색 gray, 텍스트 색상 Black
+    - 레이아웃 구조: 공간에 따라 자연스럽게 줄바꿈이 되는 레이아웃
+    - 레이아웃 간격: 아이템 간 가로 간격 8px, 세로 간격 4px
+
+### 5. 프로필 정보
+
+* 요구사항 분석: 카드 하단에 담당자의 정보인 프로필 사진, 크루 네임을 표시하며, 본문 영역과 구분하기 위한 선이 존재합니다.
+* UI 명세:
+    - 구분선: 영역 상단 테두리 1px, 색상 lightGray
+    - 프로필 이미지: 크기 24px
+    - 크루 네임 텍스트:
+        - 폰트 사이즈 14px
+        - 최대 1줄, 초과 시 말줄임 처리
+    - 레이아웃 간격: 프로필 이미지와 크루 네임 사이의 간격 8px
