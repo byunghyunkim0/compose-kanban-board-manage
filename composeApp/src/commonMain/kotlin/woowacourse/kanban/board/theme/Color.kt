@@ -27,3 +27,7 @@ val DoneColumnBorder = Color(0xFFB9F8CF)
 val BoardBackground = Color(0xFFF9FAFB)
 
 val SnackBarBackground = Color(0xFF322F35)
+
+val BoardSelectBackground = Color(0xFFEEF2FF)
+
+val BoardSelectText = Color(0xFF432DD7)

@@ -1,6 +1,7 @@
 <resources>
     <string name="modal_title_new_task">새 태스크 생성</string>
     <string name="board_title">Compose Desktop 칸반 보드 </string>
+    <string name="project_title">프로젝트</string>
 
     <string name="label_title">제목 *</string>
     <string name="label_description">설명</string>
