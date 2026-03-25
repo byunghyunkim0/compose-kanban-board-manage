@@ -13,9 +13,9 @@ class KanbanCardTest {
             assigneeName = "담당자 1",
             status = KanbanStatus.TO_DO,
         )
-        kanbanCard.updateStatus(status = KanbanStatus.IN_PROGRESS)
-        assertThat(kanbanCard.status).isEqualTo(KanbanStatus.IN_PROGRESS)
-        assertThat(kanbanCard.status).isNotEqualTo(KanbanStatus.TO_DO)
-        assertThat(kanbanCard.status).isNotEqualTo(KanbanStatus.DONE)
+        val updateKanbanCard = kanbanCard.updateStatus(status = KanbanStatus.IN_PROGRESS)
+        assertThat(updateKanbanCard.status).isEqualTo(KanbanStatus.IN_PROGRESS)
+        assertThat(updateKanbanCard.status).isNotEqualTo(KanbanStatus.TO_DO)
+        assertThat(updateKanbanCard.status).isNotEqualTo(KanbanStatus.DONE)
     }
 }

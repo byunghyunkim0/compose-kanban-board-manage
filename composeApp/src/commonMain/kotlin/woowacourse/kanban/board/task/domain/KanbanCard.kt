@@ -7,4 +7,8 @@ data class KanbanCard(
     val status: KanbanStatus,
     val content: String = "",
     val tags: List<String> = emptyList(),
-)
+) {
+    fun updateStatus(status: KanbanStatus): KanbanCard {
+        return copy(status = status)
+    }
+}
