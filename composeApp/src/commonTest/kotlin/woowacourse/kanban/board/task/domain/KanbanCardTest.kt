@@ -9,6 +9,7 @@ class KanbanCardTest {
     fun `KanbanCard의 Status가 변경된다`() {
         val kanbanCard = KanbanCard(
             id = 0,
+            boardId = 0,
             title = "칸반제목 1",
             assigneeName = "담당자 1",
             status = KanbanStatus.TO_DO,
