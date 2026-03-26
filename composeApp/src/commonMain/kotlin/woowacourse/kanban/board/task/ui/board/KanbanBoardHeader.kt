@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kanbanboard.composeapp.generated.resources.Res
-import kanbanboard.composeapp.generated.resources.board_title
 import kanbanboard.composeapp.generated.resources.button_task_create
 import kanbanboard.composeapp.generated.resources.progress_text
 import org.jetbrains.compose.resources.stringResource
@@ -35,13 +34,14 @@ import woowacourse.kanban.board.theme.CreateButtonBackground
 import woowacourse.kanban.board.theme.ProgressText
 
 @Composable
-fun KanbanBoardHeader(doneCount: Int, totalCount: Int, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
+fun KanbanBoardHeader(title: String, doneCount: Int, totalCount: Int, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         val progress = if (totalCount != 0) (doneCount * 100 / totalCount) else 0
         BoardHeader(
+            title = title,
             modifier = Modifier.fillMaxWidth(),
             doneCount = doneCount,
             totalCount = totalCount,
@@ -62,13 +62,21 @@ fun KanbanBoardHeader(doneCount: Int, totalCount: Int, onCreateClick: () -> Unit
 }
 
 @Composable
-private fun BoardHeader(doneCount: Int, totalCount: Int, progress: Int, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BoardHeader(
+    title: String,
+    doneCount: Int,
+    totalCount: Int,
+    progress: Int,
+    onCreateClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BoardHeaderTitleProgress(
+            title = title,
             doneCount = doneCount,
             totalCount = totalCount,
             progress = progress,
@@ -103,13 +111,13 @@ private fun BoardCreateButton(onCreateClick: () -> Unit, modifier: Modifier = Mo
 }
 
 @Composable
-private fun BoardHeaderTitleProgress(doneCount: Int, totalCount: Int, progress: Int, modifier: Modifier = Modifier) {
+private fun BoardHeaderTitleProgress(title: String, doneCount: Int, totalCount: Int, progress: Int, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
-            text = stringResource(Res.string.board_title),
+            text = title,
             fontWeight = FontWeight.Medium,
             fontSize = 24.sp,
         )
@@ -131,6 +139,7 @@ private fun BoardHeaderTitleProgress(doneCount: Int, totalCount: Int, progress: 
 @Composable
 private fun KanbanBoardHeaderPreview() {
     KanbanBoardHeader(
+        title = "보드 제목",
         doneCount = 1,
         totalCount = 3,
         onCreateClick = {},

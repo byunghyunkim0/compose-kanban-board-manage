@@ -130,7 +130,7 @@ fun ModalBody(
         ModalAction(
             isValidTitle = state.isValidTitle,
             isValidTag = state.isValidTag,
-            onDismissRequest = { onDismissRequest() },
+            onDismissRequest = onDismissRequest,
             onClick = {
                 if (state.validate()) {
                     onCreate(state.toForm(assignee), state.toStatus())

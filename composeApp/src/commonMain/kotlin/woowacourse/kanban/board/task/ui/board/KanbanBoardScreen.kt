@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.task.domain.KanbanBoard
+import woowacourse.kanban.board.task.domain.KanbanCardForm
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.modal.ModalCreateForm
@@ -39,32 +40,26 @@ import woowacourse.kanban.board.theme.BoardBackground
 import woowacourse.kanban.board.theme.SnackBarBackground
 
 @Composable
-fun KanbanBoardScreen(modifier: Modifier = Modifier) {
-    var board by remember {
-        mutableStateOf(
-            KanbanBoard(
-                title = "보드",
-            ),
-        )
-    }
-
-    val todoCards = board.getCardByStatus(KanbanStatus.TO_DO)
-    val inProgressCards = board.getCardByStatus(KanbanStatus.IN_PROGRESS)
-    val doneCards = board.getCardByStatus(KanbanStatus.DONE)
-
+fun KanbanBoardScreen(
+    boardId: Int,
+    kanbanBoard: KanbanBoard,
+    onAddCard: (Int, KanbanCardForm, KanbanStatus) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var isShowModal by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    val todoCards = kanbanBoard.getCardByStatus(KanbanStatus.TO_DO)
+    val inProgressCards = kanbanBoard.getCardByStatus(KanbanStatus.IN_PROGRESS)
+    val doneCards = kanbanBoard.getCardByStatus(KanbanStatus.DONE)
 
     if (isShowModal) {
         ModalCreateForm(
             assignee = TaskMockData.assignees,
             onDismissRequest = { isShowModal = false },
             onCreate = { form, status ->
-//                board = board.addCard(
-//                    form,
-//                    status,
-//                )
+                onAddCard(boardId, form, status)
                 isShowModal = false
                 scope.launch {
                     snackbarHostState.showSnackbar(
@@ -95,8 +90,9 @@ fun KanbanBoardScreen(modifier: Modifier = Modifier) {
                     vertical = 16.dp,
                     horizontal = 24.dp,
                 ),
-                doneCount = board.doneCount,
-                totalCount = board.totalCount,
+                title = kanbanBoard.title,
+                doneCount = kanbanBoard.doneCount,
+                totalCount = kanbanBoard.totalCount,
                 onCreateClick = { isShowModal = true },
             )
         },
@@ -152,5 +148,12 @@ private fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modif
 )
 @Composable
 private fun KanbanBoardScreenPreview() {
-    KanbanBoardScreen()
+    KanbanBoardScreen(
+        boardId = 0,
+        onAddCard = { _, _, _ -> },
+        kanbanBoard = KanbanBoard(
+            title = "compose",
+            cards = listOf(),
+        ),
+    )
 }
