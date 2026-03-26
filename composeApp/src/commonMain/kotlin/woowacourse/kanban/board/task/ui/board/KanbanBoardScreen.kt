@@ -42,9 +42,9 @@ import woowacourse.kanban.board.theme.SnackBarBackground
 fun KanbanBoardScreen(modifier: Modifier = Modifier) {
     var board by remember { mutableStateOf(KanbanBoard()) }
 
-    val todoCards = remember(board) { board.getCardByStatus(KanbanStatus.TO_DO) }
-    val inProgressCards = remember(board) { board.getCardByStatus(KanbanStatus.IN_PROGRESS) }
-    val doneCards = remember(board) { board.getCardByStatus(KanbanStatus.DONE) }
+    val todoCards = board.getCardByStatus(KanbanStatus.TO_DO)
+    val inProgressCards = board.getCardByStatus(KanbanStatus.IN_PROGRESS)
+    val doneCards = board.getCardByStatus(KanbanStatus.DONE)
 
     var isShowModal by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,7 +91,6 @@ fun KanbanBoardScreen(modifier: Modifier = Modifier) {
                 ),
                 doneCount = board.doneCount,
                 totalCount = board.totalCount,
-                progress = board.progress,
                 onCreateClick = { isShowModal = true },
             )
         },

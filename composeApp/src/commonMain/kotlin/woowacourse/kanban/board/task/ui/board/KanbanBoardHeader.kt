@@ -35,11 +35,12 @@ import woowacourse.kanban.board.theme.CreateButtonBackground
 import woowacourse.kanban.board.theme.ProgressText
 
 @Composable
-fun KanbanBoardHeader(doneCount: Int, totalCount: Int, progress: Int, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
+fun KanbanBoardHeader(doneCount: Int, totalCount: Int, onCreateClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
+        val progress = if (totalCount != 0) (doneCount * 100 / totalCount) else 0
         BoardHeader(
             modifier = Modifier.fillMaxWidth(),
             doneCount = doneCount,
@@ -131,8 +132,7 @@ private fun BoardHeaderTitleProgress(doneCount: Int, totalCount: Int, progress: 
 private fun KanbanBoardHeaderPreview() {
     KanbanBoardHeader(
         doneCount = 1,
-        totalCount = 2,
-        progress = 50,
+        totalCount = 3,
         onCreateClick = {},
     )
 }
