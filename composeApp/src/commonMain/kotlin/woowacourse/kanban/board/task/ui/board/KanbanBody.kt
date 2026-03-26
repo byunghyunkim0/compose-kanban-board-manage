@@ -16,10 +16,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,7 +38,6 @@ import kanbanboard.composeapp.generated.resources.status_In_Progress
 import kanbanboard.composeapp.generated.resources.status_to_do
 import org.jetbrains.compose.resources.stringResource
 import woowacourse.kanban.board.task.domain.KanbanCard
-import woowacourse.kanban.board.task.domain.KanbanCardForm
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.ui.card.KanbanCardItem
 import woowacourse.kanban.board.theme.DoneColumnBorder
@@ -49,6 +56,12 @@ fun KanbanBody(
     todoCards: List<KanbanCard> = emptyList(),
     inProgressCards: List<KanbanCard> = emptyList(),
     doneCards: List<KanbanCard> = emptyList(),
+    getIsDropTarget: (KanbanStatus) -> Boolean = { false },
+    onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
+    onTaskDragStart: (KanbanCard) -> Unit = {},
+    onTaskDragChange: (Offset) -> Unit = {},
+    onTaskDragEnd: () -> Unit = {},
+    onTaskDragCancel: () -> Unit = {},
 ) {
     Row(
         modifier = modifier,
@@ -57,14 +70,32 @@ fun KanbanBody(
         KanbanColumn(
             status = KanbanStatus.TO_DO,
             cards = todoCards,
+            getIsDropTarget = getIsDropTarget,
+            onBoundsChanged = onBoundsChanged,
+            onTaskDragStart = onTaskDragStart,
+            onTaskDragChange = onTaskDragChange,
+            onTaskDragEnd = onTaskDragEnd,
+            onTaskDragCancel = onTaskDragCancel,
         )
         KanbanColumn(
             status = KanbanStatus.IN_PROGRESS,
             cards = inProgressCards,
+            getIsDropTarget = getIsDropTarget,
+            onBoundsChanged = onBoundsChanged,
+            onTaskDragStart = onTaskDragStart,
+            onTaskDragChange = onTaskDragChange,
+            onTaskDragEnd = onTaskDragEnd,
+            onTaskDragCancel = onTaskDragCancel,
         )
         KanbanColumn(
             KanbanStatus.DONE,
             cards = doneCards,
+            getIsDropTarget = getIsDropTarget,
+            onBoundsChanged = onBoundsChanged,
+            onTaskDragStart = onTaskDragStart,
+            onTaskDragChange = onTaskDragChange,
+            onTaskDragEnd = onTaskDragEnd,
+            onTaskDragCancel = onTaskDragCancel,
         )
     }
 }
@@ -72,7 +103,17 @@ fun KanbanBody(
 data class ColumnColors(val headerColor: Color, val backgroundColor: Color, val borderColor: Color)
 
 @Composable
-private fun KanbanColumn(status: KanbanStatus, cards: List<KanbanCard>, modifier: Modifier = Modifier) {
+private fun KanbanColumn(
+    status: KanbanStatus,
+    cards: List<KanbanCard>,
+    modifier: Modifier = Modifier,
+    getIsDropTarget: (KanbanStatus) -> Boolean = { false },
+    onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
+    onTaskDragStart: (KanbanCard) -> Unit = {},
+    onTaskDragChange: (Offset) -> Unit = {},
+    onTaskDragEnd: () -> Unit = {},
+    onTaskDragCancel: () -> Unit = {},
+) {
     val (title, color) = when (status) {
         KanbanStatus.TO_DO -> stringResource(Res.string.status_to_do) to ColumnColors(
             headerColor = TodoColumnHeaderBackground,
@@ -93,12 +134,25 @@ private fun KanbanColumn(status: KanbanStatus, cards: List<KanbanCard>, modifier
         )
     }
 
+    val isDropTarget by remember { derivedStateOf { getIsDropTarget(status) } }
+    val lastBoundsHolder = remember { mutableStateOf<Rect?>(null) }
+
     Column(
         modifier = modifier.fillMaxHeight().width(320.dp).clip(RoundedCornerShape(10.dp)).border(
             width = 1.dp,
             color = color.borderColor,
             shape = RoundedCornerShape(10.dp),
-        ),
+        )
+            .onGloballyPositioned {
+                val newBounds = it.boundsInWindow()
+                if (newBounds != lastBoundsHolder.value) {
+                    lastBoundsHolder.value = newBounds
+                    onBoundsChanged(status, newBounds)
+                }
+            }
+            .then(
+                if (isDropTarget) modifier.border(2.dp, Color.Black, RoundedCornerShape(12.dp)) else modifier,
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().background(color = color.headerColor).padding(
@@ -148,12 +202,11 @@ private fun KanbanColumn(status: KanbanStatus, cards: List<KanbanCard>, modifier
                 items = cards,
             ) {
                 KanbanCardItem(
-                    KanbanCardForm(
-                        title = it.title,
-                        crewName = it.assigneeName,
-                        tags = it.tags,
-                        content = it.content,
-                    ),
+                    kanbanCard = it,
+                    onDragStart = onTaskDragStart,
+                    onDragChange = onTaskDragChange,
+                    onDragEnd = onTaskDragEnd,
+                    onDragCancel = onTaskDragCancel,
                 )
             }
         }

@@ -26,12 +26,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.task.domain.KanbanBoard
+import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanCardForm
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
@@ -45,6 +48,12 @@ fun KanbanBoardScreen(
     kanbanBoard: KanbanBoard,
     onAddCard: (Int, KanbanCardForm, KanbanStatus) -> Unit,
     modifier: Modifier = Modifier,
+    getIsDropTarget: (KanbanStatus) -> Boolean = { false },
+    onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
+    onTaskDragStart: (KanbanCard) -> Unit = {},
+    onTaskDragChange: (Offset) -> Unit = {},
+    onTaskDragEnd: () -> Unit = {},
+    onTaskDragCancel: () -> Unit = {},
 ) {
     var isShowModal by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -106,6 +115,12 @@ fun KanbanBoardScreen(
                 .fillMaxWidth()
                 .background(BoardBackground)
                 .padding(24.dp),
+            getIsDropTarget = getIsDropTarget,
+            onBoundsChanged = onBoundsChanged,
+            onTaskDragStart = onTaskDragStart,
+            onTaskDragChange = onTaskDragChange,
+            onTaskDragEnd = onTaskDragEnd,
+            onTaskDragCancel = onTaskDragCancel,
         )
     }
 }
