@@ -40,7 +40,13 @@ import woowacourse.kanban.board.theme.SnackBarBackground
 
 @Composable
 fun KanbanBoardScreen(modifier: Modifier = Modifier) {
-    var board by remember { mutableStateOf(KanbanBoard()) }
+    var board by remember {
+        mutableStateOf(
+            KanbanBoard(
+                title = "보드",
+            ),
+        )
+    }
 
     val todoCards = board.getCardByStatus(KanbanStatus.TO_DO)
     val inProgressCards = board.getCardByStatus(KanbanStatus.IN_PROGRESS)
@@ -55,10 +61,10 @@ fun KanbanBoardScreen(modifier: Modifier = Modifier) {
             assignee = TaskMockData.assignees,
             onDismissRequest = { isShowModal = false },
             onCreate = { form, status ->
-                board = board.addCard(
-                    form,
-                    status,
-                )
+//                board = board.addCard(
+//                    form,
+//                    status,
+//                )
                 isShowModal = false
                 scope.launch {
                     snackbarHostState.showSnackbar(
