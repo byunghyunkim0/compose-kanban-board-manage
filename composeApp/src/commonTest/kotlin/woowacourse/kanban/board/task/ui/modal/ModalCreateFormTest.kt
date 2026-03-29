@@ -22,7 +22,7 @@ class ModalCreateFormTest {
                 ModalCreateForm(
                     assignee = TaskMockData.assignees,
                     onDismissRequest = {},
-                    onCreate = { _, _ -> },
+                    onCreate = { _ -> },
                 )
             }
         }
@@ -42,7 +42,7 @@ class ModalCreateFormTest {
                 ModalCreateForm(
                     assignee = TaskMockData.assignees,
                     onDismissRequest = {},
-                    onCreate = { _, _ -> },
+                    onCreate = { _ -> },
                 )
             }
         }
@@ -63,7 +63,7 @@ class ModalCreateFormTest {
                 ModalCreateForm(
                     assignee = TaskMockData.assignees,
                     onDismissRequest = {},
-                    onCreate = { _, _ -> },
+                    onCreate = { _ -> },
                 )
             }
         }
@@ -84,7 +84,7 @@ class ModalCreateFormTest {
                 ModalCreateForm(
                     assignee = TaskMockData.assignees,
                     onDismissRequest = {},
-                    onCreate = { _, _ -> },
+                    onCreate = { _ -> },
                 )
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
+import woowacourse.kanban.board.task.domain.KanbanBoard
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanBoardScreenTest {
@@ -14,7 +15,14 @@ class KanbanBoardScreenTest {
     @Test
     fun `새 태스크 생성 버튼 클릭 시 Dialog가 생성된다`() = runComposeUiTest {
         setContent {
-            KanbanBoardScreen()
+            KanbanBoardScreen(
+                boardId = 0,
+                kanbanBoard = KanbanBoard(
+                    boardId = 0,
+                    title = "board",
+                ),
+                onAddCard = { _, _ -> },
+            )
         }
 
         onNodeWithText("새 태스크 생성").performClick()
@@ -25,7 +33,14 @@ class KanbanBoardScreenTest {
     @Test
     fun `Dialog를 닫고 다시 열었을 때 이전 입력값이 초기화된다`() = runComposeUiTest {
         setContent {
-            KanbanBoardScreen()
+            KanbanBoardScreen(
+                boardId = 0,
+                kanbanBoard = KanbanBoard(
+                    boardId = 0,
+                    title = "board",
+                ),
+                onAddCard = { _, _ -> },
+            )
         }
 
         onNodeWithText("새 태스크 생성").performClick()
@@ -40,7 +55,14 @@ class KanbanBoardScreenTest {
     @Test
     fun `카드 추가 성공 시 스낵바가 생성된다`() = runComposeUiTest {
         setContent {
-            KanbanBoardScreen()
+            KanbanBoardScreen(
+                boardId = 0,
+                kanbanBoard = KanbanBoard(
+                    boardId = 0,
+                    title = "board",
+                ),
+                onAddCard = { _, _ -> },
+            )
         }
 
         onNodeWithText("새 태스크 생성").performClick()
@@ -53,7 +75,14 @@ class KanbanBoardScreenTest {
     @Test
     fun `일정 시간이 경과하면 스낵바가 화면에서 사라진다`() = runComposeUiTest {
         setContent {
-            KanbanBoardScreen()
+            KanbanBoardScreen(
+                boardId = 0,
+                kanbanBoard = KanbanBoard(
+                    boardId = 0,
+                    title = "board",
+                ),
+                onAddCard = { _, _ -> },
+            )
         }
 
         onNodeWithText("새 태스크 생성").performClick()

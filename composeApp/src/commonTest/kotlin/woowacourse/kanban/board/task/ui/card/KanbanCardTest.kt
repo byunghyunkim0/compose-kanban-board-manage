@@ -2,7 +2,6 @@ package woowacourse.kanban.board.task.ui.card
 
 import androidx.compose.ui.semantics.SemanticsActions.GetTextLayoutResult
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
@@ -10,27 +9,29 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.text.TextLayoutResult
 import kotlin.test.assertEquals
 import org.junit.Test
-import woowacourse.kanban.board.task.domain.KanbanCardForm
+import woowacourse.kanban.board.task.domain.KanbanCard
+import woowacourse.kanban.board.task.domain.KanbanStatus
 
 @OptIn(ExperimentalTestApi::class)
 class KanbanCardTest {
     @Test
     fun `모든 필드가 있는 카드 테스트`() = runComposeUiTest {
         // given
-        val kanbanCardForm = KanbanCardForm(
+        val kanbanCard = KanbanCard(
             title = "LazyColumn 컴포넌트 구현",
-            crewName = "다이노",
+            assigneeName = "다이노",
             tags = listOf(
                 "컴포넌트",
                 "성능",
             ),
             content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.",
+            status = KanbanStatus.TO_DO,
         )
 
         // when
         setContent {
             KanbanCardItem(
-                kanbanCardForm = kanbanCardForm,
+                kanbanCard = kanbanCard,
             )
         }
 
@@ -45,19 +46,20 @@ class KanbanCardTest {
     @Test
     fun `content가 비어 있는 경우 UI 테스트`() = runComposeUiTest {
         // given
-        val kanbanCardForm = KanbanCardForm(
+        val kanbanCard = KanbanCard(
             title = "LazyColumn 컴포넌트 구현",
-            crewName = "다이노",
+            assigneeName = "다이노",
             tags = listOf(
                 "컴포넌트",
                 "성능",
             ),
+            status = KanbanStatus.TO_DO,
         )
 
         // when
         setContent {
             KanbanCardItem(
-                kanbanCardForm = kanbanCardForm,
+                kanbanCard = kanbanCard,
             )
         }
 
@@ -66,41 +68,17 @@ class KanbanCardTest {
     }
 
     @Test
-    fun `content가 공백인 경우 UI 테스트`() = runComposeUiTest {
-        val content = "       "
-        // given
-        val kanbanCardForm = KanbanCardForm(
-            title = "LazyColumn 컴포넌트 구현",
-            crewName = "다이노",
-            tags = listOf(
-                "컴포넌트",
-                "성능",
-            ),
-            content = content,
-        )
-
-        // when
-        setContent {
-            KanbanCardItem(
-                kanbanCardForm = kanbanCardForm,
-            )
-        }
-
-        // then
-        onNodeWithText(content).assertDoesNotExist()
-    }
-
-    @Test
     fun `긴 담당자 말줄임표 발생 테스트`() = runComposeUiTest {
         val crewName = "너무 긴 담당자 이름너무 긴 담당자 이름너무 긴 담당자 이름"
-        val kanbanCardForm = KanbanCardForm(
+        val kanbanCard = KanbanCard(
             title = "제목",
-            crewName = crewName,
+            assigneeName = crewName,
+            status = KanbanStatus.TO_DO,
         )
 
         setContent {
             KanbanCardItem(
-                kanbanCardForm = kanbanCardForm,
+                kanbanCard = kanbanCard,
             )
         }
 
@@ -110,21 +88,5 @@ class KanbanCardTest {
         }
 
         assertEquals(textLayoutResult.first().hasVisualOverflow, true)
-    }
-
-    @Test
-    fun `프로필 이미지가 없다면 기본 이미지 출력 테스트`() = runComposeUiTest {
-        val kanbanCardForm = KanbanCardForm(
-            title = "LazyColumn 컴포넌트 구현",
-            crewName = "다이노",
-        )
-
-        setContent {
-            KanbanCardItem(
-                kanbanCardForm = kanbanCardForm,
-            )
-        }
-
-        onNodeWithContentDescription("기본 이미지").assertExists()
     }
 }

@@ -5,89 +5,117 @@ import org.assertj.core.api.Assertions.assertThat
 
 class KanbanProjectTest {
     @Test
-    fun `boardId에 따라 KanbanCard를 분류한다`() {
-        val kanbanProject = KanbanProject("프로젝트")
-
-        val newKanbanProject = kanbanProject.addCard(
-            createKanbanCard(
-                0,
-                0,
-                status = KanbanStatus.IN_PROGRESS,
-            ),
-        ).addCard(
-            createKanbanCard(
-                1,
-                0,
-                status = KanbanStatus.DONE,
-            ),
-        ).addCard(
-            createKanbanCard(
-                2,
-                1,
-                status = KanbanStatus.DONE,
-            ),
-        )
-
-        val boardIdList = newKanbanProject.getKanbanCardByBoardId(0)
-        val boardIdList1 = newKanbanProject.getKanbanCardByBoardId(1)
-
-        assertThat(boardIdList.size).isEqualTo(2)
-        assertThat(boardIdList1.size).isEqualTo(1)
-    }
-
-    @Test
-    fun `KanbanCard를 추가한다`() {
-        val kanbanCard = createKanbanCard(
-            cardId = 0,
+    fun `보드 ID로 보드를 조회할 수 있다`() {
+        val board1 = KanbanBoard(
             boardId = 0,
+            title = "보드1",
+        )
+        val board2 = KanbanBoard(
+            boardId = 1,
+            title = "보드2",
+        )
+        val project = KanbanProject(
+            projectTitle = "프로젝트",
+            boards = listOf(
+                board1,
+                board2,
+            ),
         )
 
-        val kanbanProject = KanbanProject(projectTitle = "프로젝트")
-
-        val newProject = kanbanProject.addCard(kanbanCard)
-
-        assertThat(newProject.kanbanCards.size).isEqualTo(1)
+        assertThat(project.getBoard(0)!!.title).isEqualTo("보드1")
+        assertThat(project.getBoard(1)!!.title).isEqualTo("보드2")
     }
 
     @Test
-    fun `KanbanCard의 Status를 수정한다`() {
-        val kanbanProject = KanbanProject(
+    fun `잘못된 보드 ID로 조회하면 null을 반환한다`() {
+        val board1 = KanbanBoard(
+            boardId = 0,
+            title = "보드1",
+        )
+        val board2 = KanbanBoard(
+            boardId = 1,
+            title = "보드2",
+        )
+        val project = KanbanProject(
             projectTitle = "프로젝트",
-        )
-
-        val newKanbanProject = kanbanProject.addCard(
-            createKanbanCard(
-                0,
-                0,
-                status = KanbanStatus.IN_PROGRESS,
-            ),
-        ).addCard(
-            createKanbanCard(
-                1,
-                0,
-                status = KanbanStatus.DONE,
-            ),
-        ).addCard(
-            createKanbanCard(
-                2,
-                0,
-                status = KanbanStatus.DONE,
+            boards = listOf(
+                board1,
+                board2,
             ),
         )
 
-        val updateKanbanProject = newKanbanProject.updateCardStatus(
-            id = 1,
-            status = KanbanStatus.TO_DO,
-        )
-
-        assertThat(updateKanbanProject.getKanbanCard(1)?.status).isEqualTo(KanbanStatus.TO_DO)
+        assertThat(project.getBoard(10)).isNull()
     }
 
-    private fun createKanbanCard(cardId: Long, boardId: Int, status: KanbanStatus = KanbanStatus.TO_DO) = KanbanCard(
-        id = cardId,
-        boardId = boardId,
-        title = "제목",
-        assigneeName = "담당자",
-        status = status,
-    )
+    @Test
+    fun `특정 보드에 새로운 카드를 추가하면 새로운 Project를 반환한다`() {
+        val board1 = KanbanBoard(
+            boardId = 0,
+            title = "보드1",
+        )
+        val board2 = KanbanBoard(
+            boardId = 1,
+            title = "보드2",
+        )
+        val project = KanbanProject(
+            projectTitle = "프로젝트",
+            boards = listOf(
+                board1,
+                board2,
+            ),
+        )
+
+        val newProject = project.addBoardCard(
+            0,
+            KanbanCard(
+                title = "제목",
+                assigneeName = "담당자",
+                status = KanbanStatus.TO_DO,
+            ),
+        )
+
+        val searchBoard = newProject?.getBoard(0)
+
+        assertThat(newProject).isNotNull()
+        assertThat(searchBoard?.cards[0]?.title).isEqualTo("제목")
+        assertThat(board1.cards.size).isEqualTo(0)
+    }
+
+    @Test
+    fun `특정 보드에 카드를 업데이트하면 새로운 Project를 반환한다`() {
+        val board1 = KanbanBoard(
+            boardId = 0,
+            title = "보드1",
+        )
+        val board2 = KanbanBoard(
+            boardId = 1,
+            title = "보드2",
+        )
+        val project = KanbanProject(
+            projectTitle = "프로젝트",
+            boards = listOf(
+                board1,
+                board2,
+            ),
+        )
+
+        val addProject = project.addBoardCard(
+            0,
+            KanbanCard(
+                id = "1",
+                title = "제목",
+                assigneeName = "담당자",
+                status = KanbanStatus.TO_DO,
+            ),
+        )
+
+        val updateProject = addProject?.updateCardStatus(
+            boardId = 0,
+            cardId = "1",
+            KanbanStatus.DONE,
+        )
+
+        assertThat(addProject?.getBoard(0)?.getCardByStatus(KanbanStatus.DONE)?.size).isEqualTo(0)
+        assertThat(updateProject?.getBoard(0)?.getCardByStatus(KanbanStatus.DONE)?.size).isEqualTo(1)
+    }
 }
