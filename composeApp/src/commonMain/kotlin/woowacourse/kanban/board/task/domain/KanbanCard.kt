@@ -1,8 +1,9 @@
 package woowacourse.kanban.board.task.domain
 
+import java.util.UUID
+
 data class KanbanCard(
-    val id: Long,
-    val boardId: Int,
+    val id: String = UUID.randomUUID().toString(),
     val title: String,
     val assigneeName: String,
     val status: KanbanStatus,
