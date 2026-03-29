@@ -58,10 +58,6 @@ fun KanbanBoardScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val todoCards = kanbanBoard.getCardByStatus(KanbanStatus.TO_DO)
-    val inProgressCards = kanbanBoard.getCardByStatus(KanbanStatus.IN_PROGRESS)
-    val doneCards = kanbanBoard.getCardByStatus(KanbanStatus.DONE)
-
     if (isShowModal) {
         ModalCreateForm(
             assignee = TaskMockData.assignees,
@@ -106,9 +102,7 @@ fun KanbanBoardScreen(
         },
     ) { paddingValues ->
         KanbanBody(
-            todoCards = todoCards,
-            inProgressCards = inProgressCards,
-            doneCards = doneCards,
+            kanbanBoard = kanbanBoard,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxWidth()

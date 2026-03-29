@@ -37,6 +37,7 @@ import kanbanboard.composeapp.generated.resources.status_Done
 import kanbanboard.composeapp.generated.resources.status_In_Progress
 import kanbanboard.composeapp.generated.resources.status_to_do
 import org.jetbrains.compose.resources.stringResource
+import woowacourse.kanban.board.task.domain.KanbanBoard
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.ui.card.KanbanCardItem
@@ -53,9 +54,7 @@ import woowacourse.kanban.board.theme.TodoColumnHeaderBackground
 @Composable
 fun KanbanBody(
     modifier: Modifier = Modifier,
-    todoCards: List<KanbanCard> = emptyList(),
-    inProgressCards: List<KanbanCard> = emptyList(),
-    doneCards: List<KanbanCard> = emptyList(),
+    kanbanBoard: KanbanBoard,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
     onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
     onTaskDragStart: (KanbanCard) -> Unit = {},
@@ -67,36 +66,18 @@ fun KanbanBody(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        KanbanColumn(
-            status = KanbanStatus.TO_DO,
-            cards = todoCards,
-            getIsDropTarget = getIsDropTarget,
-            onBoundsChanged = onBoundsChanged,
-            onTaskDragStart = onTaskDragStart,
-            onTaskDragChange = onTaskDragChange,
-            onTaskDragEnd = onTaskDragEnd,
-            onTaskDragCancel = onTaskDragCancel,
-        )
-        KanbanColumn(
-            status = KanbanStatus.IN_PROGRESS,
-            cards = inProgressCards,
-            getIsDropTarget = getIsDropTarget,
-            onBoundsChanged = onBoundsChanged,
-            onTaskDragStart = onTaskDragStart,
-            onTaskDragChange = onTaskDragChange,
-            onTaskDragEnd = onTaskDragEnd,
-            onTaskDragCancel = onTaskDragCancel,
-        )
-        KanbanColumn(
-            KanbanStatus.DONE,
-            cards = doneCards,
-            getIsDropTarget = getIsDropTarget,
-            onBoundsChanged = onBoundsChanged,
-            onTaskDragStart = onTaskDragStart,
-            onTaskDragChange = onTaskDragChange,
-            onTaskDragEnd = onTaskDragEnd,
-            onTaskDragCancel = onTaskDragCancel,
-        )
+        KanbanStatus.entries.forEach { status ->
+            KanbanColumn(
+                status = status,
+                cards = kanbanBoard.getCardByStatus(status),
+                getIsDropTarget = getIsDropTarget,
+                onBoundsChanged = onBoundsChanged,
+                onTaskDragStart = onTaskDragStart,
+                onTaskDragChange = onTaskDragChange,
+                onTaskDragEnd = onTaskDragEnd,
+                onTaskDragCancel = onTaskDragCancel,
+            )
+        }
     }
 }
 
@@ -220,17 +201,13 @@ private fun KanbanColumn(
 @Composable
 private fun KanbanBodyPreview() {
     KanbanBody(
-        todoCards = listOf(
-            createTempCard(
-                status = KanbanStatus.TO_DO,
-            ),
-            createTempCard(
-                status = KanbanStatus.TO_DO,
-            ),
-        ),
-        inProgressCards = listOf(
-            createTempCard(
-                status = KanbanStatus.IN_PROGRESS,
+        kanbanBoard = KanbanBoard(
+            boardId = 0,
+            title = "보드",
+            cards = listOf(
+                createTempCard(KanbanStatus.TO_DO),
+                createTempCard(KanbanStatus.IN_PROGRESS),
+                createTempCard(KanbanStatus.DONE),
             ),
         ),
     )
