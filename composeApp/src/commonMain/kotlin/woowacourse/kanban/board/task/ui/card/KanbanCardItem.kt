@@ -36,24 +36,16 @@ import woowacourse.kanban.board.task.domain.KanbanStatus
 fun KanbanCardItem(
     kanbanCard: KanbanCard,
     modifier: Modifier = Modifier,
+    isDraggable: Boolean = true,
     onDragStart: (KanbanCard) -> Unit = {},
     onDragChange: (Offset) -> Unit = {},
     onDragEnd: () -> Unit = {},
     onDragCancel: () -> Unit = {},
 ) {
     var cardWindowPosition by remember { mutableStateOf(Offset.Zero) }
-    Column(
-        modifier = modifier
-            .width(286.dp)
-            .background(
-                Color.White,
-                RoundedCornerShape(10.dp),
-            )
-            .border(
-                Dp.Hairline,
-                Color.Gray,
-                RoundedCornerShape(10.dp),
-            )
+
+    val dragModifier = if (isDraggable) {
+        Modifier
             .onGloballyPositioned { cardWindowPosition = it.positionInWindow() }
             .pointerInput(Unit) {
                 detectDragGestures(
@@ -66,6 +58,22 @@ fun KanbanCardItem(
                     onDragCancel = { onDragCancel() },
                 )
             }
+    } else {
+        Modifier
+    }
+    Column(
+        modifier = modifier
+            .width(286.dp)
+            .background(
+                Color.White,
+                RoundedCornerShape(10.dp),
+            )
+            .border(
+                Dp.Hairline,
+                Color.Gray,
+                RoundedCornerShape(10.dp),
+            )
+            .then(dragModifier)
             .padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
