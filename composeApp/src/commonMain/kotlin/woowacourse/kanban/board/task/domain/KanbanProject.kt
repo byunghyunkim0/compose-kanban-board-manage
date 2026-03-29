@@ -1,35 +1,25 @@
 package woowacourse.kanban.board.task.domain
 
-data class KanbanProject(val projectTitle: String, val kanbanCards: List<KanbanCard> = emptyList()) {
-    fun updateCardStatus(id: Long, status: KanbanStatus): KanbanProject {
-        val newCard = getKanbanCard(id).updateStatus(status)
-        val updatedCards = kanbanCards.map { card ->
-            if (card.id == id) newCard else card
+data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard> = emptyList()) {
+    fun getBoard(boardId: Int): KanbanBoard? = boards.find { it.boardId == boardId }
+
+    fun updateCardStatus(boardId: Int, cardId: String, status: KanbanStatus): KanbanProject? {
+        val targetBoard = getBoard(boardId) ?: return null
+        val updateBoard = targetBoard.updateCardStatus(cardId = cardId, status = status) ?: return null
+        val newBoards = boards.map {
+            if (it.boardId == boardId) updateBoard
+            else it
         }
-        return copy(kanbanCards = updatedCards.toList())
+        return copy(boards = newBoards)
     }
 
-    fun addCard(kanbanCard: KanbanCard) = copy(kanbanCards = kanbanCards + kanbanCard)
-
-    fun addCard(boardId: Int, kanbanCardForm: KanbanCardForm, status: KanbanStatus): KanbanProject {
-        val newId = (kanbanCards.maxOfOrNull { it.id } ?: 0) + 1
-
-        val newCard = KanbanCard(
-            id = newId,
-            boardId = boardId,
-            title = kanbanCardForm.title,
-            content = kanbanCardForm.content,
-            assigneeName = kanbanCardForm.crewName,
-            status = status,
-        )
-
-        return copy(kanbanCards = kanbanCards + newCard)
+    fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProject? {
+        val targetBoard = getBoard(boardId) ?: return null
+        val addBoard = targetBoard.addCard(card)
+        val newBoards = boards.map {
+            if (it.boardId == boardId) addBoard
+            else it
+        }
+        return copy(boards = newBoards)
     }
-
-    fun getKanbanCard(id: Long): KanbanCard {
-        val findKanbanCard = kanbanCards.find { it.id == id } ?: throw IllegalArgumentException("id가 ${id}인 카드를 찾지 못했습니다.")
-        return findKanbanCard
-    }
-
-    fun getKanbanCardByBoardId(boardId: Int) = kanbanCards.filter { it.boardId == boardId }
 }
