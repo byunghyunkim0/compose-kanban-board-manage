@@ -222,29 +222,21 @@ private fun KanbanBodyPreview() {
     KanbanBody(
         todoCards = listOf(
             createTempCard(
-                id = 1,
-                boardId = 0,
                 status = KanbanStatus.TO_DO,
             ),
             createTempCard(
-                id = 2,
-                boardId = 0,
                 status = KanbanStatus.TO_DO,
             ),
         ),
         inProgressCards = listOf(
             createTempCard(
-                id = 3,
-                boardId = 0,
                 status = KanbanStatus.IN_PROGRESS,
             ),
         ),
     )
 }
 
-private fun createTempCard(id: Long, boardId: Int, status: KanbanStatus) = KanbanCard(
-    id = id,
-    boardId = boardId,
+private fun createTempCard(status: KanbanStatus) = KanbanCard(
     title = "제목",
     assigneeName = "담당자",
     tags = listOf("태그"),

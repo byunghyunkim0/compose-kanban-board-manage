@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.task.domain.KanbanBoard
 import woowacourse.kanban.board.task.domain.KanbanCard
-import woowacourse.kanban.board.task.domain.KanbanCardForm
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.modal.ModalCreateForm
@@ -46,7 +45,7 @@ import woowacourse.kanban.board.theme.SnackBarBackground
 fun KanbanBoardScreen(
     boardId: Int,
     kanbanBoard: KanbanBoard,
-    onAddCard: (Int, KanbanCardForm, KanbanStatus) -> Unit,
+    onAddCard: (Int, KanbanCard) -> Unit,
     modifier: Modifier = Modifier,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
     onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
@@ -67,8 +66,8 @@ fun KanbanBoardScreen(
         ModalCreateForm(
             assignee = TaskMockData.assignees,
             onDismissRequest = { isShowModal = false },
-            onCreate = { form, status ->
-                onAddCard(boardId, form, status)
+            onCreate = { card ->
+                onAddCard(boardId, card)
                 isShowModal = false
                 scope.launch {
                     snackbarHostState.showSnackbar(
@@ -165,10 +164,11 @@ private fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modif
 private fun KanbanBoardScreenPreview() {
     KanbanBoardScreen(
         boardId = 0,
-        onAddCard = { _, _, _ -> },
+        onAddCard = { _, _ -> },
         kanbanBoard = KanbanBoard(
             title = "compose",
             cards = listOf(),
+            boardId = 0,
         ),
     )
 }

@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.tooling.preview.Preview
-import woowacourse.kanban.board.task.domain.KanbanBoard
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.KanbanStatus
@@ -32,55 +31,63 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
         mutableStateOf(
             KanbanProject(
                 projectTitle = "4주차 미션 보드",
+                boards = TaskMockData.boards,
             ),
         )
     }
 
-    val kanbanBoard =
-        KanbanBoard(title = TaskMockData.boardTitles[selectedBoard], cards = kanbanProject.getKanbanCardByBoardId(selectedBoard))
+    val kanbanBoard = kanbanProject.getBoard(selectedBoard)
 
-    Row(
-        modifier = modifier,
-    ) {
-        KanbanProjectSideBar(
-            modifier = Modifier.fillMaxHeight(),
-            title = kanbanProject.projectTitle,
-            boardTitle = TaskMockData.boardTitles,
-            selected = selectedBoard,
-            onClick = { index ->
-                selectedBoard = index
-            },
-        )
-        KanbanBoardScreen(
-            boardId = selectedBoard,
-            kanbanBoard = kanbanBoard,
-            onAddCard = { boardId, form, status ->
-                kanbanProject = kanbanProject.addCard(boardId, form, status)
-            },
-            getIsDropTarget = { status ->
-                currentDragPosition?.let { columnBounds[status]?.contains(it) } ?: false
-            },
-            onBoundsChanged = { status, rect -> columnBounds[status] = rect },
-            onTaskDragStart = { task -> draggedTask = task },
-            onTaskDragChange = { pos -> currentDragPosition = pos },
-            onTaskDragEnd = {
-                val dropPosition = currentDragPosition ?: return@KanbanBoardScreen
-                val targetStatus = columnBounds.entries
-                    .firstOrNull { (_, rect) -> rect.contains(dropPosition) }?.key
+    if (kanbanBoard != null) {
+        Row(
+            modifier = modifier,
+        ) {
+            KanbanProjectSideBar(
+                modifier = Modifier.fillMaxHeight(),
+                title = kanbanProject.projectTitle,
+                boardTitle = kanbanProject.getBoardTitles(),
+                selected = selectedBoard,
+                onClick = { index ->
+                    selectedBoard = index
+                },
+            )
+            KanbanBoardScreen(
+                boardId = selectedBoard,
+                kanbanBoard = kanbanBoard,
+                onAddCard = { boardId, card ->
+                    val newProject = kanbanProject.addBoardCard(boardId, card)
+                    if (newProject != null) kanbanProject = newProject
+                },
+                getIsDropTarget = { status ->
+                    currentDragPosition?.let { columnBounds[status]?.contains(it) } ?: false
+                },
+                onBoundsChanged = { status, rect -> columnBounds[status] = rect },
+                onTaskDragStart = { task -> draggedTask = task },
+                onTaskDragChange = { pos -> currentDragPosition = pos },
+                onTaskDragEnd = {
+                    val dropPosition = currentDragPosition ?: return@KanbanBoardScreen
+                    val targetStatus = columnBounds.entries
+                        .firstOrNull { (_, rect) -> rect.contains(dropPosition) }?.key
 
-                draggedTask?.let { task ->
-                    if (targetStatus != null && task.status != targetStatus) {
-                        kanbanProject = kanbanProject.updateCardStatus(task.id, targetStatus)
+                    draggedTask?.let { task ->
+                        if (targetStatus != null && task.status != targetStatus) {
+                            val updateProject = kanbanProject.updateCardStatus(
+                                boardId = selectedBoard,
+                                cardId = task.id,
+                                status = targetStatus,
+                            )
+                            if (updateProject != null) kanbanProject = updateProject
+                        }
                     }
-                }
-                currentDragPosition = null
-                draggedTask = null
-            },
-            onTaskDragCancel = {
-                currentDragPosition = null
-                draggedTask = null
-            },
-        )
+                    currentDragPosition = null
+                    draggedTask = null
+                },
+                onTaskDragCancel = {
+                    currentDragPosition = null
+                    draggedTask = null
+                },
+            )
+        }
     }
 }
 

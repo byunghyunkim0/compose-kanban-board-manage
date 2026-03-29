@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import woowacourse.kanban.board.task.domain.KanbanCardForm
+import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskErrorType
 import woowacourse.kanban.board.task.domain.TaskValidator
@@ -43,15 +43,14 @@ class ModalCreateFormState {
         return validTitle == TaskErrorType.DEFAULT && validTag == TaskErrorType.TAG_DEFAULT
     }
 
-    fun toForm(assignees: List<String>): KanbanCardForm {
+    fun toCard(assignees: List<String>): KanbanCard {
         val tags = if (tag.isEmpty()) emptyList() else tag.split(",").map { it.trim() }
-        return KanbanCardForm(
+        return KanbanCard(
             title = title,
             content = content,
             tags = tags,
-            crewName = assignees[assignee],
+            assigneeName = assignees[assignee],
+            status = KanbanStatus.entries[status],
         )
     }
-
-    fun toStatus() = KanbanStatus.entries[status]
 }
