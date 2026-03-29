@@ -101,7 +101,7 @@ fun KanbanBoardScreen(
             )
         },
     ) { paddingValues ->
-        KanbanBody(
+        KanbanBoardContent(
             kanbanBoard = kanbanBoard,
             modifier = Modifier
                 .padding(paddingValues)

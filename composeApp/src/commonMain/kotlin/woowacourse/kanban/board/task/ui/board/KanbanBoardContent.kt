@@ -52,7 +52,7 @@ import woowacourse.kanban.board.theme.TodoColumnContentBackground
 import woowacourse.kanban.board.theme.TodoColumnHeaderBackground
 
 @Composable
-fun KanbanBody(
+fun KanbanBoardContent(
     modifier: Modifier = Modifier,
     kanbanBoard: KanbanBoard,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
@@ -67,7 +67,7 @@ fun KanbanBody(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         KanbanStatus.entries.forEach { status ->
-            KanbanColumn(
+            KanbanBoardStatusColumn(
                 status = status,
                 cards = kanbanBoard.getCardByStatus(status),
                 getIsDropTarget = getIsDropTarget,
@@ -84,7 +84,7 @@ fun KanbanBody(
 data class ColumnColors(val headerColor: Color, val backgroundColor: Color, val borderColor: Color)
 
 @Composable
-private fun KanbanColumn(
+private fun KanbanBoardStatusColumn(
     status: KanbanStatus,
     cards: List<KanbanCard>,
     modifier: Modifier = Modifier,
@@ -200,7 +200,7 @@ private fun KanbanColumn(
 )
 @Composable
 private fun KanbanBodyPreview() {
-    KanbanBody(
+    KanbanBoardContent(
         kanbanBoard = KanbanBoard(
             boardId = 0,
             title = "보드",
