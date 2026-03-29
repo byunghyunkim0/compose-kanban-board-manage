@@ -19,27 +19,26 @@ import kanbanboard.composeapp.generated.resources.error_invalid_tag_format
 import kanbanboard.composeapp.generated.resources.error_max_tags_format
 import kanbanboard.composeapp.generated.resources.label_title
 import kanbanboard.composeapp.generated.resources.place_holder_input_title
-import kanbanboard.composeapp.generated.resources.supporting_text_tags
 import org.jetbrains.compose.resources.stringResource
-import woowacourse.kanban.board.task.domain.TaskErrorType
+import woowacourse.kanban.board.task.domain.KanbanCardError
 
 @Composable
 fun ModalBodyInput(
     title: String,
     placeholder: String,
     maxLines: Int,
-    validType: TaskErrorType,
     state: String,
     isValid: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    errorType: KanbanCardError? = null,
+    supportingMessage: String? = null,
 ) {
-    val supportingText = when (validType) {
-        TaskErrorType.TITLE_FORMAT -> stringResource(Res.string.error_empty_title)
-        TaskErrorType.TAG_FORMAT -> stringResource(Res.string.error_invalid_tag_format)
-        TaskErrorType.TAG_DEFAULT -> stringResource(Res.string.supporting_text_tags)
-        TaskErrorType.TAG_SIZE -> stringResource(Res.string.error_max_tags_format)
-        TaskErrorType.DEFAULT -> ""
+    val errorText = when (errorType) {
+        KanbanCardError.TITLE_FORMAT -> stringResource(Res.string.error_empty_title)
+        KanbanCardError.TAG_FORMAT -> stringResource(Res.string.error_invalid_tag_format)
+        KanbanCardError.TAG_SIZE -> stringResource(Res.string.error_max_tags_format)
+        null -> null
     }
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -53,7 +52,8 @@ fun ModalBodyInput(
             isValid = isValid,
             placeHolder = placeholder,
             maxLines = maxLines,
-            supportingText = supportingText,
+            supportingMessage = supportingMessage,
+            errorMessage = errorText,
         )
     }
 }
@@ -69,12 +69,12 @@ private fun ModalBodyInputPreview() {
             title = stringResource(Res.string.label_title),
             placeholder = stringResource(Res.string.place_holder_input_title),
             maxLines = 1,
-            validType = TaskErrorType.TITLE_FORMAT,
             state = state,
             onValueChange = {
                 state = it
             },
             isValid = false,
+            errorType = KanbanCardError.TITLE_FORMAT,
         )
     }
 }

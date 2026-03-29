@@ -19,16 +19,15 @@ import kanbanboard.composeapp.generated.resources.label_title
 import kanbanboard.composeapp.generated.resources.place_holder_input_description
 import kanbanboard.composeapp.generated.resources.place_holder_input_tags
 import kanbanboard.composeapp.generated.resources.place_holder_input_title
+import kanbanboard.composeapp.generated.resources.supporting_text_tags
 import org.jetbrains.compose.resources.stringResource
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanStatus
-import woowacourse.kanban.board.task.domain.TaskErrorType
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.theme.AssigneeButtonBackground
 import woowacourse.kanban.board.theme.BorderAssigneeButton
 import woowacourse.kanban.board.theme.BorderStatusButton
 import woowacourse.kanban.board.theme.StatusButtonBackground
-
 @Composable
 fun ModalBody(
     state: ModalCreateFormState,
@@ -47,20 +46,19 @@ fun ModalBody(
             title = stringResource(Res.string.label_title),
             placeholder = stringResource(Res.string.place_holder_input_title),
             maxLines = 1,
-            validType = state.validTitle,
             state = state.title,
             onValueChange = {
                 state.title = it
                 state.resetTitleError()
             },
-            isValid = state.validTitle == TaskErrorType.DEFAULT,
+            isValid = state.validTitle == null,
+            errorType = state.validTitle,
         )
 
         ModalBodyInput(
             title = stringResource(Res.string.label_description),
             placeholder = stringResource(Res.string.place_holder_input_description),
             maxLines = 5,
-            validType = TaskErrorType.DEFAULT,
             state = state.content,
             onValueChange = {
                 state.content = it
@@ -72,13 +70,14 @@ fun ModalBody(
             title = stringResource(Res.string.label_tags),
             placeholder = stringResource(Res.string.place_holder_input_tags),
             maxLines = 1,
-            validType = state.validTag,
             state = state.tag,
             onValueChange = {
                 state.tag = it
                 state.resetTagError()
             },
-            isValid = state.validTag == TaskErrorType.TAG_DEFAULT,
+            isValid = state.validTag == null,
+            errorType = state.validTag,
+            supportingMessage = stringResource(Res.string.supporting_text_tags),
         )
 
         ModalSelector(

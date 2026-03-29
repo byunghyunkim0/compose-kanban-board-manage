@@ -22,10 +22,13 @@ fun ModalInputField(
     placeHolder: String,
     maxLines: Int,
     isValid: Boolean,
-    supportingText: String,
     modifier: Modifier = Modifier,
+    supportingMessage: String? = null,
+    errorMessage: String? = null,
 ) {
     val color = if (isValid) Color.Black else Color.Red
+    val message = (errorMessage ?: supportingMessage)
+    val text = message ?: ""
     Column(
         modifier = modifier,
     ) {
@@ -57,7 +60,7 @@ fun ModalInputField(
             modifier = Modifier.padding(
                 top = 4.dp, start = 16.dp, end = 16.dp,
             ),
-            text = supportingText,
+            text = text,
             fontSize = 12.sp,
             color = color,
         )

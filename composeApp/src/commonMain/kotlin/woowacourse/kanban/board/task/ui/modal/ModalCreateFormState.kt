@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import woowacourse.kanban.board.task.domain.KanbanCard
+import woowacourse.kanban.board.task.domain.KanbanCard.Companion.validateTags
+import woowacourse.kanban.board.task.domain.KanbanCard.Companion.validateTitle
+import woowacourse.kanban.board.task.domain.KanbanCardError
 import woowacourse.kanban.board.task.domain.KanbanStatus
-import woowacourse.kanban.board.task.domain.TaskErrorType
-import woowacourse.kanban.board.task.domain.TaskValidator
-
 class ModalCreateFormState {
     var title by mutableStateOf("")
     var content by mutableStateOf("")
@@ -17,30 +17,32 @@ class ModalCreateFormState {
     var status by mutableIntStateOf(0)
     var assignee by mutableIntStateOf(0)
 
-    var validTitle by mutableStateOf(TaskErrorType.DEFAULT)
+    var validTitle: KanbanCardError? by mutableStateOf(null)
 
     val isValidTitle by derivedStateOf {
-        validTitle == TaskErrorType.DEFAULT
+        validTitle == null
     }
 
-    var validTag by mutableStateOf(TaskErrorType.TAG_DEFAULT)
+    var validTag: KanbanCardError? by mutableStateOf(null)
 
     val isValidTag by derivedStateOf {
-        validTag == TaskErrorType.TAG_DEFAULT
+        validTag == null
     }
 
     fun resetTitleError() {
-        validTitle = TaskErrorType.DEFAULT
+        validTitle = null
     }
 
     fun resetTagError() {
-        validTag = TaskErrorType.TAG_DEFAULT
+        validTag = null
     }
 
     fun validate(): Boolean {
-        validTitle = TaskValidator.validateTitle(title)
-        validTag = TaskValidator.validateTags(tag)
-        return validTitle == TaskErrorType.DEFAULT && validTag == TaskErrorType.TAG_DEFAULT
+        validTitle = validateTitle(title)
+
+        val tags = if (tag.isEmpty()) emptyList() else tag.split(",").map { it.trim() }
+        validTag = validateTags(tags)
+        return validTitle == null && validTag == null
     }
 
     fun toCard(assignees: List<String>): KanbanCard {
