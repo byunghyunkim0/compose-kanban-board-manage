@@ -11,8 +11,10 @@ data class KanbanCard(
     val tags: List<String> = emptyList(),
 ) {
     init {
-        require(validateTitle(title) == null) { "칸반 카드의 제목이 올바르지 않습니다." }
-        require(validateTags(tags) == null) { "칸반 카드의 태그 형식이 올바르지 않습니다." }
+        val titleError = validateTitle(title)
+        require(titleError == null) { "칸반 카드의 제목이 올바르지 않습니다. - 제목: $title" }
+        val tagError = validateTags(tags)
+        require(tagError == null) { "칸반 카드의 태그 형식이 올바르지 않습니다. - 에러 타입: $tagError, tags: $tags" }
     }
 
     fun updateStatus(status: KanbanStatus): KanbanCard {
