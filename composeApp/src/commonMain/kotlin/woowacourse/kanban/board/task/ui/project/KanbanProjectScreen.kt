@@ -45,7 +45,7 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
             KanbanProjectSideBar(
                 modifier = Modifier.fillMaxHeight(),
                 title = kanbanProject.projectTitle,
-                boardTitle = kanbanProject.getBoardTitles(),
+                boardTitle = kanbanProject.boardTitles,
                 selected = selectedBoard,
                 onClick = { index ->
                     selectedBoard = index

@@ -97,6 +97,7 @@ fun KanbanBoardScreen(
                 title = kanbanBoard.title,
                 doneCount = kanbanBoard.doneCount,
                 totalCount = kanbanBoard.totalCount,
+                progress = kanbanBoard.progress,
                 onCreateClick = { isShowModal = true },
             )
         },
