@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun KanbanCardProfile(crewName: String, modifier: Modifier = Modifier) {
-    val imageModifier = Modifier.size(24.dp).clip(CircleShape)
 
     Row(
         modifier = modifier.padding(
@@ -33,7 +32,7 @@ fun KanbanCardProfile(crewName: String, modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Default.AccountCircle,
             contentDescription = "기본 이미지",
-            modifier = imageModifier,
+            modifier = Modifier.size(24.dp).clip(CircleShape),
         )
 
         Text(

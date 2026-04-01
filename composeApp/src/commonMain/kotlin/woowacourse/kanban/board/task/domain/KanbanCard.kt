@@ -22,8 +22,8 @@ data class KanbanCard(
     }
 
     companion object {
-        const val MAX_TAG_COUNT = 5
-        const val MAX_TAG_LENGTH = 5
+        private const val MAX_TAG_COUNT = 5
+        private const val MAX_TAG_LENGTH = 5
 
         fun validateTitle(title: String): KanbanCardError? {
             if (title.isBlank()) return KanbanCardError.TITLE_FORMAT
