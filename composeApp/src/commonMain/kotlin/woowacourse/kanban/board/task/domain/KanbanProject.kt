@@ -6,7 +6,7 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
 
     fun updateCardStatus(boardId: Int, cardId: String, status: KanbanStatus): KanbanProjectResult {
         val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        return when(val boardResult = targetBoard.updateCardStatus(cardId = cardId, status = status)) {
+        return when (val boardResult = targetBoard.updateCardStatus(cardId = cardId, status = status)) {
             is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
             is KanbanBoardResult.Success -> {
                 val newBoard = boards.map {

@@ -15,6 +15,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.tooling.preview.Preview
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanProject
+import woowacourse.kanban.board.task.domain.KanbanProjectResult
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.board.KanbanBoardScreen
@@ -76,7 +77,7 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
                                 cardId = task.id,
                                 status = targetStatus,
                             )
-                            if (updateProject != null) kanbanProject = updateProject
+                            if (updateProject is KanbanProjectResult.Success) kanbanProject = updateProject.project
                         }
                     }
                     currentDragPosition = null

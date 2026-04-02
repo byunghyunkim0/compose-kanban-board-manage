@@ -13,10 +13,10 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
 
     fun updateCardStatus(cardId: String, status: KanbanStatus): KanbanBoardResult {
         val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        return when(val cardResult = targetCard.updateStatus(status)) {
+        return when (val cardResult = targetCard.updateStatus(status)) {
             is KanbanCardResult.Failure -> KanbanBoardResult.Failure(cardResult.error)
             is KanbanCardResult.Success -> {
-                val newCards = cards.map { if(it.id == cardId) cardResult.card else it }
+                val newCards = cards.map { if (it.id == cardId) cardResult.card else it }
                 KanbanBoardResult.Success(copy(cards = newCards))
             }
         }

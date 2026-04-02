@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun KanbanCardProfile(crewName: String, modifier: Modifier = Modifier) {
+fun KanbanCardProfile(crewName: String?, modifier: Modifier = Modifier) {
 
     Row(
         modifier = modifier.padding(
@@ -35,12 +35,14 @@ fun KanbanCardProfile(crewName: String, modifier: Modifier = Modifier) {
             modifier = Modifier.size(24.dp).clip(CircleShape),
         )
 
-        Text(
-            text = crewName,
-            fontSize = 14.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (crewName != null) {
+            Text(
+                text = crewName,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 

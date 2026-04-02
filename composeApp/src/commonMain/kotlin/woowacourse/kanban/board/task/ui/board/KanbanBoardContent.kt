@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import kanbanboard.composeapp.generated.resources.Res
 import kanbanboard.composeapp.generated.resources.status_Done
 import kanbanboard.composeapp.generated.resources.status_In_Progress
+import kanbanboard.composeapp.generated.resources.status_review
 import kanbanboard.composeapp.generated.resources.status_to_do
 import org.jetbrains.compose.resources.stringResource
 import woowacourse.kanban.board.task.domain.KanbanBoard
@@ -47,6 +48,9 @@ import woowacourse.kanban.board.theme.DoneColumnHeaderBackground
 import woowacourse.kanban.board.theme.InProgressColumnBorder
 import woowacourse.kanban.board.theme.InProgressColumnContentBackground
 import woowacourse.kanban.board.theme.InProgressColumnHeaderBackground
+import woowacourse.kanban.board.theme.ReviewColumnBorder
+import woowacourse.kanban.board.theme.ReviewColumnContentBackground
+import woowacourse.kanban.board.theme.ReviewColumnHeaderBackground
 import woowacourse.kanban.board.theme.TodoColumnBorder
 import woowacourse.kanban.board.theme.TodoColumnContentBackground
 import woowacourse.kanban.board.theme.TodoColumnHeaderBackground
@@ -106,6 +110,12 @@ private fun KanbanBoardStatusColumn(
             headerColor = InProgressColumnHeaderBackground,
             backgroundColor = InProgressColumnContentBackground,
             borderColor = InProgressColumnBorder,
+        )
+
+        KanbanStatus.REVIEW -> stringResource(Res.string.status_review) to ColumnColors(
+            headerColor = ReviewColumnHeaderBackground,
+            backgroundColor = ReviewColumnContentBackground,
+            borderColor = ReviewColumnBorder,
         )
 
         KanbanStatus.DONE -> stringResource(Res.string.status_Done) to ColumnColors(
