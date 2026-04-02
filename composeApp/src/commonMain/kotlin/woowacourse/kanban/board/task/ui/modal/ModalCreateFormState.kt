@@ -1,16 +1,26 @@
 package woowacourse.kanban.board.task.ui.modal
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanCard.Companion.validateTags
 import woowacourse.kanban.board.task.domain.KanbanCard.Companion.validateTitle
 import woowacourse.kanban.board.task.domain.KanbanCardError
 import woowacourse.kanban.board.task.domain.KanbanStatus
-class ModalCreateFormState {
+
+@Composable
+fun RememberModalCreateFormState(assignees: List<String>): ModalCreateFormState {
+    return remember { ModalCreateFormState(assignees = assignees) }
+}
+
+@Stable
+class ModalCreateFormState(val assignees: List<String>) {
     var title by mutableStateOf("")
     var content by mutableStateOf("")
     var tag by mutableStateOf("")

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,13 +28,7 @@ import woowacourse.kanban.board.theme.BorderAssigneeButton
 import woowacourse.kanban.board.theme.BorderStatusButton
 import woowacourse.kanban.board.theme.StatusButtonBackground
 @Composable
-fun ModalBody(
-    state: ModalCreateFormState,
-    assignee: List<String>,
-    onDismissRequest: () -> Unit,
-    onCreate: (KanbanCard) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun ModalBody(state: ModalCreateFormState, onDismissRequest: () -> Unit, onCreate: (KanbanCard) -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -106,7 +99,7 @@ fun ModalBody(
             title = stringResource(Res.string.label_status),
             content = {
                 itemsIndexed(
-                    assignee,
+                    state.assignees,
                 ) { id, name ->
                     ModalOptionButton(
                         modifier = Modifier.height(68.dp),
@@ -132,7 +125,7 @@ fun ModalBody(
             onDismissRequest = onDismissRequest,
             onClick = {
                 if (state.validate()) {
-                    onCreate(state.toCard(assignee))
+                    onCreate(state.toCard(state.assignees))
                 }
             },
         )
@@ -145,10 +138,8 @@ fun ModalBody(
 )
 @Composable
 private fun ModalBodyPreview() {
-    val state = remember { ModalCreateFormState() }
     ModalBody(
-        state = state,
-        assignee = TaskMockData.assignees,
+        state = RememberModalCreateFormState(TaskMockData.assignees),
         onDismissRequest = {},
         onCreate = { _ -> },
     )

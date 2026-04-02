@@ -19,9 +19,11 @@ import woowacourse.kanban.board.task.domain.KanbanProjectResult
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.board.KanbanBoardScreen
+import woowacourse.kanban.board.task.ui.modal.ModalCreateFormState
+import woowacourse.kanban.board.task.ui.modal.RememberModalCreateFormState
 
 @Composable
-fun KanbanProjectScreen(modifier: Modifier = Modifier) {
+fun KanbanProjectScreen(modalCreateFormState: ModalCreateFormState, modifier: Modifier = Modifier) {
     var draggedTask by remember { mutableStateOf<KanbanCard?>(null) }
     var currentDragPosition by remember { mutableStateOf<Offset?>(null) }
     val columnBounds = remember { mutableStateMapOf<KanbanStatus, Rect>() }
@@ -53,10 +55,14 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
                 },
             )
             KanbanBoardScreen(
+                modalCreateFormState = modalCreateFormState,
                 boardId = selectedBoard,
                 kanbanBoard = kanbanBoard,
                 onAddCard = { boardId, card ->
-                    val newProject = kanbanProject.addBoardCard(boardId, card)
+                    val newProject = kanbanProject.addBoardCard(
+                        boardId,
+                        card,
+                    )
                     if (newProject is KanbanProjectResult.Success) kanbanProject = newProject.project
                 },
                 getIsDropTarget = { status ->
@@ -95,5 +101,5 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
 @Preview(widthDp = 1500)
 @Composable
 private fun KanbanProjectScreenPreview() {
-    KanbanProjectScreen()
+    KanbanProjectScreen(modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees))
 }

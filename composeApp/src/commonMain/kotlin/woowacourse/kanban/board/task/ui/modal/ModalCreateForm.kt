@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,9 +17,12 @@ import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.TaskMockData
 
 @Composable
-fun ModalCreateForm(assignee: List<String>, onDismissRequest: () -> Unit, onCreate: (KanbanCard) -> Unit, modifier: Modifier = Modifier) {
-    val state = remember { ModalCreateFormState() }
-
+fun ModalCreateForm(
+    state: ModalCreateFormState,
+    onDismissRequest: () -> Unit,
+    onCreate: (KanbanCard) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Dialog(
         onDismissRequest = onDismissRequest,
     ) {
@@ -43,7 +45,6 @@ fun ModalCreateForm(assignee: List<String>, onDismissRequest: () -> Unit, onCrea
 
             ModalBody(
                 state = state,
-                assignee = assignee,
                 modifier = Modifier,
                 onDismissRequest = onDismissRequest,
                 onCreate = onCreate,
@@ -59,7 +60,7 @@ fun ModalCreateForm(assignee: List<String>, onDismissRequest: () -> Unit, onCrea
 @Composable
 private fun ModalCreateFormPreview() {
     ModalCreateForm(
-        assignee = TaskMockData.assignees,
+        state = RememberModalCreateFormState(TaskMockData.assignees),
         onDismissRequest = {},
         onCreate = { _ -> },
     )

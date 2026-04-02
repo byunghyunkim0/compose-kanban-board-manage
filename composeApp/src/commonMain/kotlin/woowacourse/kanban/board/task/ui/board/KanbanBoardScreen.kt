@@ -38,11 +38,14 @@ import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.modal.ModalCreateForm
+import woowacourse.kanban.board.task.ui.modal.ModalCreateFormState
+import woowacourse.kanban.board.task.ui.modal.RememberModalCreateFormState
 import woowacourse.kanban.board.theme.BoardBackground
 import woowacourse.kanban.board.theme.SnackBarBackground
 
 @Composable
 fun KanbanBoardScreen(
+    modalCreateFormState: ModalCreateFormState,
     boardId: Int,
     kanbanBoard: KanbanBoard,
     onAddCard: (Int, KanbanCard) -> Unit,
@@ -60,7 +63,7 @@ fun KanbanBoardScreen(
 
     if (isShowModal) {
         ModalCreateForm(
-            assignee = TaskMockData.assignees,
+            state = modalCreateFormState,
             onDismissRequest = { isShowModal = false },
             onCreate = { card ->
                 onAddCard(boardId, card)
@@ -158,6 +161,7 @@ private fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modif
 @Composable
 private fun KanbanBoardScreenPreview() {
     KanbanBoardScreen(
+        modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
         boardId = 0,
         onAddCard = { _, _ -> },
         kanbanBoard = KanbanBoard(
