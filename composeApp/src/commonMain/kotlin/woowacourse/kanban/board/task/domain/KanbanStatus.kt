@@ -27,10 +27,10 @@ enum class KanbanStatus {
 
     fun isAssigneeRequired(): Boolean {
         return when (this) {
-            TO_DO -> true
-            IN_PROGRESS -> false
-            REVIEW -> false
-            DONE -> false
+            TO_DO -> false
+            IN_PROGRESS -> true
+            REVIEW -> true
+            DONE -> true
         }
     }
 }

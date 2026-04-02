@@ -19,7 +19,7 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
 
     fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProjectResult {
         val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        return when(val boardResult = targetBoard.addCard(card)) {
+        return when (val boardResult = targetBoard.addCard(card)) {
             is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
             is KanbanBoardResult.Success -> {
                 val newBoard = boards.map {
@@ -32,7 +32,7 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
 
     fun deleteCard(boardId: Int, cardId: String): KanbanProjectResult {
         val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        return when(val boardResult = targetBoard.deleteCard(cardId)) {
+        return when (val boardResult = targetBoard.deleteCard(cardId)) {
             is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
             is KanbanBoardResult.Success -> {
                 val newBoard = boards.map {
