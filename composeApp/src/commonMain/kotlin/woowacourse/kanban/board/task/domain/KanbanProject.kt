@@ -4,14 +4,17 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
     val boardTitles: List<String> = boards.map { it.title }
     fun getBoard(boardId: Int): KanbanBoard? = boards.find { it.boardId == boardId }
 
-    fun updateCardStatus(boardId: Int, cardId: String, status: KanbanStatus): KanbanProject? {
-        val targetBoard = getBoard(boardId) ?: return null
-        val updateBoard = targetBoard.updateCardStatus(cardId = cardId, status = status) ?: return null
-        val newBoards = boards.map {
-            if (it.boardId == boardId) updateBoard
-            else it
+    fun updateCardStatus(boardId: Int, cardId: String, status: KanbanStatus): KanbanProjectResult {
+        val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        return when(val boardResult = targetBoard.updateCardStatus(cardId = cardId, status = status)) {
+            is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
+            is KanbanBoardResult.Success -> {
+                val newBoard = boards.map {
+                    if (it.boardId == boardId) boardResult.board else it
+                }
+                KanbanProjectResult.Success(copy(boards = newBoard))
+            }
         }
-        return copy(boards = newBoards)
     }
 
     fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProject? {
