@@ -17,6 +17,11 @@ data class KanbanCard(
         require(tagError == null) { "칸반 카드의 태그 형식이 올바르지 않습니다. - 에러 타입: $tagError, tags: $tags" }
     }
 
+    fun deleteCard(): KanbanCardResult {
+        if (status.isDeletable()) return KanbanCardResult.Failure(KanbanError.DELETION_NOT_ALLOWED)
+        return KanbanCardResult.Success(copy())
+    }
+
     fun updateStatus(toStatus: KanbanStatus): KanbanCardResult {
         if (!status.isTranslationStatus(toStatus)) {
             return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)

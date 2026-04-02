@@ -26,4 +26,17 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
         }
         return copy(boards = newBoards)
     }
+
+    fun deleteCard(boardId: Int, cardId: String): KanbanProjectResult {
+        val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        return when(val boardResult = targetBoard.deleteCard(cardId)) {
+            is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
+            is KanbanBoardResult.Success -> {
+                val newBoard = boards.map {
+                    if (it.boardId == boardId) boardResult.board else it
+                }
+                KanbanProjectResult.Success(copy(boards = newBoard))
+            }
+        }
+    }
 }
