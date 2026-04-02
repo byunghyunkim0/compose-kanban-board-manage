@@ -9,7 +9,9 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
 
     fun getCard(cardId: String): KanbanCard? = cards.find { it.id == cardId }
 
-    fun addCard(card: KanbanCard): KanbanBoard = copy(cards = cards + card)
+    fun addCard(card: KanbanCard): KanbanBoardResult {
+        return KanbanBoardResult.Success(copy(cards = cards + card))
+    }
 
     fun updateCardStatus(cardId: String, status: KanbanStatus): KanbanBoardResult {
         val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)

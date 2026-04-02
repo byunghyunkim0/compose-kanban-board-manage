@@ -3,8 +3,56 @@ package woowacourse.kanban.board.task.domain
 import kotlin.test.assertFailsWith
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import woowacourse.kanban.board.task.domain.KanbanCardResult
 
 class KanbanCardTest {
+
+    @Test
+    fun `Status가 Todo에서 Inprogress로만 변경할 수 있다`() {
+        val card = KanbanCard(
+            title = "제목",
+            assigneeName = "담당자",
+            status = KanbanStatus.TO_DO,
+        )
+        val progressCard = card.updateStatus(KanbanStatus.IN_PROGRESS)
+        assertThat(progressCard).isInstanceOf(KanbanCardResult.Success::class.java)
+    }
+
+    @Test
+    fun `Status가 Todo에서 Inprogress로만 변경할 때 담당자가 필요하다`() {
+        val card = KanbanCard(
+            title = "제목",
+            assigneeName = "담당자",
+            status = KanbanStatus.TO_DO,
+        )
+    }
+
+    @Test
+    fun `Status가 Inprogress에서 Todo, Review으로만 변경할 수 있다`() {
+        val card = KanbanCard(
+            title = "제목",
+            assigneeName = "담당자",
+            status = KanbanStatus.TO_DO,
+        )
+    }
+
+    @Test
+    fun `Status가 Review에서 Inprogress, Done으로만 변경할 수 있다`() {
+        val card = KanbanCard(
+            title = "제목",
+            assigneeName = "담당자",
+            status = KanbanStatus.TO_DO,
+        )
+    }
+
+    @Test
+    fun `Status가 Done에서 Todo로만 변경할 수 있다`() {
+        val card = KanbanCard(
+            title = "제목",
+            assigneeName = "담당자",
+            status = KanbanStatus.TO_DO,
+        )
+    }
 
     @Test
     fun `KanbanCard의 Status가 변경된다`() {

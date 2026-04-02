@@ -57,7 +57,7 @@ fun KanbanProjectScreen(modifier: Modifier = Modifier) {
                 kanbanBoard = kanbanBoard,
                 onAddCard = { boardId, card ->
                     val newProject = kanbanProject.addBoardCard(boardId, card)
-                    if (newProject != null) kanbanProject = newProject
+                    if (newProject is KanbanProjectResult.Success) kanbanProject = newProject.project
                 },
                 getIsDropTarget = { status ->
                     currentDragPosition?.let { columnBounds[status]?.contains(it) } ?: false

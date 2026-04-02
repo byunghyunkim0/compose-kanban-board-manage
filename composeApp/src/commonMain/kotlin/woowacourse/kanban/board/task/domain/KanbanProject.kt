@@ -17,14 +17,17 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
         }
     }
 
-    fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProject? {
-        val targetBoard = getBoard(boardId) ?: return null
-        val addBoard = targetBoard.addCard(card)
-        val newBoards = boards.map {
-            if (it.boardId == boardId) addBoard
-            else it
+    fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProjectResult {
+        val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        return when(val boardResult = targetBoard.addCard(card)) {
+            is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
+            is KanbanBoardResult.Success -> {
+                val newBoard = boards.map {
+                    if (it.boardId == boardId) boardResult.board else it
+                }
+                KanbanProjectResult.Success(copy(boards = newBoard))
+            }
         }
-        return copy(boards = newBoards)
     }
 
     fun deleteCard(boardId: Int, cardId: String): KanbanProjectResult {
