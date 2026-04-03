@@ -12,10 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import jdk.internal.joptsimple.internal.Messages.message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import woowacourse.kanban.board.task.domain.KanbanBoard
 import woowacourse.kanban.board.task.domain.KanbanCard
+import woowacourse.kanban.board.task.domain.KanbanError
 import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.KanbanProjectResult
 import woowacourse.kanban.board.task.domain.KanbanStatus
@@ -65,6 +67,7 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
         onAddCard(selectedBoard, card)
         isShowModal = false
         coroutineScope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
             snackbarHostState.showSnackbar(
                 message = "새로운 태스크가 추가되었습니다.",
                 duration = SnackbarDuration.Short,
@@ -78,6 +81,36 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
             cardId = card.id,
             status = targetStatus,
         )
+        when(updateProject) {
+            is KanbanProjectResult.Failure -> {
+                val message = getErrorMessage(updateProject.error)
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    snackbarHostState.showSnackbar(
+                        message = message,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+            is KanbanProjectResult.Success -> {
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    snackbarHostState.showSnackbar(
+                        message = "태스크가 수정되었습니다.",
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+        }
         if (updateProject is KanbanProjectResult.Success) kanbanProject = updateProject.project
+    }
+
+    private fun getErrorMessage(kanbanError: KanbanError) = when(kanbanError) {
+        KanbanError.INVALID_TRANSITION -> "해당 상태로 옮길 수 없습니다."
+        KanbanError.ASSIGNEE_REQUIRED -> "담당자를 지정해야 상태를 옮길 수 있습니다."
+        KanbanError.DELETION_NOT_ALLOWED -> "해당 상태에서는 태스크 삭제가 불가합니다."
+        KanbanError.KANBAN_NOT_FOUND -> "카드를 찾을 수 없습니다."
     }
 }
