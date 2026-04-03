@@ -16,6 +16,11 @@ import androidx.compose.ui.window.Dialog
 import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.TaskMockData
 
+import kanbanboard.composeapp.generated.resources.Res
+import kanbanboard.composeapp.generated.resources.modal_title_edit_task
+import kanbanboard.composeapp.generated.resources.modal_title_new_task
+import org.jetbrains.compose.resources.stringResource
+
 @Composable
 fun ModalCreateForm(
     state: ModalCreateFormState,
@@ -36,7 +41,10 @@ fun ModalCreateForm(
                     RoundedCornerShape(10.dp),
                 ),
         ) {
-            ModalHeader(onDismissRequest = onDismissRequest)
+            ModalHeader(
+                title = stringResource(Res.string.modal_title_new_task),
+                onDismissRequest = onDismissRequest
+            )
 
             HorizontalDivider(
                 thickness = Dp.Hairline,
@@ -46,8 +54,68 @@ fun ModalCreateForm(
             ModalBody(
                 state = state,
                 modifier = Modifier,
-                onDismissRequest = onDismissRequest,
-                onCreate = onCreate,
+                actionContent = {
+                    ModalCreateAction(
+                        isValidTitle = state.isValidTitle,
+                        isValidTag = state.isValidTag,
+                        onDismissRequest = onDismissRequest,
+                        onCreate = {
+                            if (state.validate()) {
+                                onCreate(state.toCard())
+                            }
+                        },
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun ModalEditForm(
+    state: ModalCreateFormState,
+    onDismissRequest: () -> Unit,
+    onEdit: (KanbanCard) -> Unit,
+    onDelete: (KanbanCard) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+    ) {
+        Column(
+            modifier = modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.White)
+                .border(
+                    1.dp,
+                    Color.LightGray,
+                    RoundedCornerShape(10.dp),
+                ),
+        ) {
+            ModalHeader(
+                title = stringResource(Res.string.modal_title_edit_task),
+                onDismissRequest = onDismissRequest
+            )
+
+            HorizontalDivider(
+                thickness = Dp.Hairline,
+                color = Color.LightGray,
+            )
+
+            ModalBody(
+                state = state,
+                modifier = Modifier,
+                actionContent = {
+                    ModalEditAction(
+                        onDismissRequest = onDismissRequest,
+                        onDelete = {
+                            onDelete(state.toCard())
+                        },
+                        onEdit = {
+                            onEdit(state.toCard())
+                        },
+                    )
+                },
             )
         }
     }
@@ -63,5 +131,21 @@ private fun ModalCreateFormPreview() {
         state = RememberModalCreateFormState(TaskMockData.assignees),
         onDismissRequest = {},
         onCreate = { _ -> },
+    )
+}
+
+@Preview(
+    widthDp = 672,
+    heightDp = 1000,
+)
+@Composable
+private fun ModalEditFormPreview() {
+    ModalEditForm(
+        state = RememberModalCreateFormState(
+            assignees = TaskMockData.assignees
+        ),
+        onDismissRequest = {},
+        onEdit = {},
+        onDelete = {},
     )
 }
