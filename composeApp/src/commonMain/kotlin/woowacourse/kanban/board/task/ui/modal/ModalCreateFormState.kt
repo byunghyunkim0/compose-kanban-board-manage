@@ -1,7 +1,6 @@
 package woowacourse.kanban.board.task.ui.modal
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,7 +18,6 @@ fun RememberModalCreateFormState(assignees: List<String>): ModalCreateFormState 
     return remember { ModalCreateFormState(assignees = assignees) }
 }
 
-@Stable
 class ModalCreateFormState(val assignees: List<String>) {
     var title by mutableStateOf("")
     var content by mutableStateOf("")
@@ -55,7 +53,7 @@ class ModalCreateFormState(val assignees: List<String>) {
         return validTitle == null && validTag == null
     }
 
-    fun toCard(assignees: List<String>): KanbanCard {
+    fun toCard(): KanbanCard {
         val tags = if (tag.isEmpty()) emptyList() else tag.split(",").map { it.trim() }
         return KanbanCard(
             title = title,

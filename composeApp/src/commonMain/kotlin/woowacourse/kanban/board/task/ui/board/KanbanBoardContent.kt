@@ -20,6 +20,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +39,13 @@ import kanbanboard.composeapp.generated.resources.status_In_Progress
 import kanbanboard.composeapp.generated.resources.status_review
 import kanbanboard.composeapp.generated.resources.status_to_do
 import org.jetbrains.compose.resources.stringResource
-import woowacourse.kanban.board.task.domain.KanbanBoard
 import woowacourse.kanban.board.task.domain.KanbanCard
+import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.KanbanStatus
+import woowacourse.kanban.board.task.domain.TaskMockData
 import woowacourse.kanban.board.task.ui.card.KanbanCardItem
+import woowacourse.kanban.board.task.ui.project.KanbanProjectState
+import woowacourse.kanban.board.task.ui.project.RememberKanbanProjectState
 import woowacourse.kanban.board.theme.DoneColumnBorder
 import woowacourse.kanban.board.theme.DoneColumnContentBackground
 import woowacourse.kanban.board.theme.DoneColumnHeaderBackground
@@ -57,8 +61,8 @@ import woowacourse.kanban.board.theme.TodoColumnHeaderBackground
 
 @Composable
 fun KanbanBoardContent(
+    kanbanProjectState: KanbanProjectState,
     modifier: Modifier = Modifier,
-    kanbanBoard: KanbanBoard,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
     onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
     onTaskDragStart: (KanbanCard) -> Unit = {},
@@ -66,21 +70,23 @@ fun KanbanBoardContent(
     onTaskDragEnd: () -> Unit = {},
     onTaskDragCancel: () -> Unit = {},
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        KanbanStatus.entries.forEach { status ->
-            KanbanBoardStatusColumn(
-                status = status,
-                cards = kanbanBoard.getCardByStatus(status),
-                getIsDropTarget = getIsDropTarget,
-                onBoundsChanged = onBoundsChanged,
-                onTaskDragStart = onTaskDragStart,
-                onTaskDragChange = onTaskDragChange,
-                onTaskDragEnd = onTaskDragEnd,
-                onTaskDragCancel = onTaskDragCancel,
-            )
+    if (kanbanProjectState.kanbanBoard != null) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            KanbanStatus.entries.forEach { status ->
+                KanbanBoardStatusColumn(
+                    status = status,
+                    kanbanProjectState = kanbanProjectState,
+                    getIsDropTarget = getIsDropTarget,
+                    onBoundsChanged = onBoundsChanged,
+                    onTaskDragStart = onTaskDragStart,
+                    onTaskDragChange = onTaskDragChange,
+                    onTaskDragEnd = onTaskDragEnd,
+                    onTaskDragCancel = onTaskDragCancel,
+                )
+            }
         }
     }
 }
@@ -90,7 +96,7 @@ data class ColumnColors(val headerColor: Color, val backgroundColor: Color, val 
 @Composable
 private fun KanbanBoardStatusColumn(
     status: KanbanStatus,
-    cards: List<KanbanCard>,
+    kanbanProjectState: KanbanProjectState,
     modifier: Modifier = Modifier,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
     onBoundsChanged: (KanbanStatus, Rect) -> Unit = { _, _ -> },
@@ -127,6 +133,8 @@ private fun KanbanBoardStatusColumn(
 
     val isDropTarget by remember { derivedStateOf { getIsDropTarget(status) } }
     val lastBoundsHolder = remember { mutableStateOf<Rect?>(null) }
+
+    val cards = kanbanProjectState.kanbanBoard?.getCardByStatus(status) ?: emptyList()
 
     Column(
         modifier = modifier.fillMaxHeight().width(320.dp).clip(RoundedCornerShape(10.dp)).border(
@@ -211,21 +219,12 @@ private fun KanbanBoardStatusColumn(
 @Composable
 private fun KanbanBodyPreview() {
     KanbanBoardContent(
-        kanbanBoard = KanbanBoard(
-            boardId = 0,
-            title = "보드",
-            cards = listOf(
-                createTempCard(KanbanStatus.TO_DO),
-                createTempCard(KanbanStatus.IN_PROGRESS),
-                createTempCard(KanbanStatus.DONE),
+        kanbanProjectState = RememberKanbanProjectState(
+            coroutineScope = rememberCoroutineScope(),
+            kanbanProject = KanbanProject(
+                projectTitle = "4주차 미션 보드",
+                boards = TaskMockData.boards,
             ),
         ),
     )
 }
-
-private fun createTempCard(status: KanbanStatus) = KanbanCard(
-    title = "제목",
-    assigneeName = "담당자",
-    tags = listOf("태그"),
-    status = status,
-)

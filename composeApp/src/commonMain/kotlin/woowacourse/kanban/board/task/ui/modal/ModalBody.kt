@@ -125,7 +125,7 @@ fun ModalBody(state: ModalCreateFormState, onDismissRequest: () -> Unit, onCreat
             onDismissRequest = onDismissRequest,
             onClick = {
                 if (state.validate()) {
-                    onCreate(state.toCard(state.assignees))
+                    onCreate(state.toCard())
                 }
             },
         )
