@@ -31,11 +31,7 @@ import woowacourse.kanban.board.theme.BorderStatusButton
 import woowacourse.kanban.board.theme.StatusButtonBackground
 
 @Composable
-fun ModalBody(
-    state: ModalCreateFormState,
-    actionContent: @Composable () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun ModalBody(state: ModalCreateFormState, actionContent: @Composable () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -81,7 +77,7 @@ fun ModalBody(
         )
 
         ModalSelector(
-            title = stringResource(Res.string.label_status)
+            title = stringResource(Res.string.label_status),
         ) {
             KanbanStatus.entries.forEachIndexed { id, status ->
                 ModalOptionButton(
@@ -105,7 +101,7 @@ fun ModalBody(
         }
 
         ModalSelector(
-            title = stringResource(Res.string.label_assignee)
+            title = stringResource(Res.string.label_assignee),
         ) {
             val currentStatus = KanbanStatus.entries[state.status]
             if (currentStatus == KanbanStatus.TO_DO) {
@@ -152,11 +148,13 @@ fun ModalBody(
 private fun ModalBodyPreview() {
     ModalBody(
         state = RememberModalCreateFormState(TaskMockData.assignees),
-        actionContent = {ModalCreateAction(
-            isValidTitle = true,
-            isValidTag = true,
-            onDismissRequest = {},
-            onCreate = {  },
-        )},
+        actionContent = {
+            ModalCreateAction(
+                isValidTitle = true,
+                isValidTag = true,
+                onDismissRequest = {},
+                onCreate = { },
+            )
+        },
     )
 }

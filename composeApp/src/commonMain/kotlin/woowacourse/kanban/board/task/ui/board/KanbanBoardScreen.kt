@@ -48,7 +48,7 @@ fun KanbanBoardScreen(
     val currentBoard = kanbanProjectState.kanbanBoard
     if (currentBoard != null) {
         Column(
-            modifier = modifier
+            modifier = modifier,
         ) {
             KanbanBoardHeader(
                 modifier = Modifier.padding(

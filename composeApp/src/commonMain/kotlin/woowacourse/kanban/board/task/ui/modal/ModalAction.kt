@@ -77,12 +77,7 @@ fun ModalCreateAction(
 }
 
 @Composable
-fun ModalEditAction(
-    onDismissRequest: () -> Unit,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun ModalEditAction(onDismissRequest: () -> Unit, onDelete: () -> Unit, onEdit: () -> Unit, modifier: Modifier = Modifier) {
     HorizontalDivider(
         thickness = Dp.Hairline,
         color = Color.LightGray,
@@ -107,7 +102,7 @@ fun ModalEditAction(
         Spacer(
             modifier = Modifier.width(12.dp),
         )
-        
+
         ModalButton(
             onClick = onDelete,
             colors = ButtonColors(
@@ -137,13 +132,7 @@ fun ModalEditAction(
 }
 
 @Composable
-private fun ModalButton(
-    onClick: () -> Unit,
-    colors: ButtonColors,
-    text: String,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
+private fun ModalButton(onClick: () -> Unit, colors: ButtonColors, text: String, modifier: Modifier = Modifier, enabled: Boolean = true) {
     Button(
         modifier = modifier
             .height(44.dp)

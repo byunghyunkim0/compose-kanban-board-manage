@@ -9,10 +9,10 @@ enum class KanbanStatus {
 
     fun isTranslationStatus(toStatus: KanbanStatus): Boolean {
         return when (this) {
-            TO_DO -> toStatus in listOf(IN_PROGRESS)
-            IN_PROGRESS -> toStatus in listOf(TO_DO, REVIEW)
-            REVIEW -> toStatus in listOf(IN_PROGRESS, DONE)
-            DONE -> toStatus in listOf(TO_DO)
+            TO_DO -> toStatus in listOf(TO_DO, IN_PROGRESS)
+            IN_PROGRESS -> toStatus in listOf(TO_DO, IN_PROGRESS, REVIEW)
+            REVIEW -> toStatus in listOf(IN_PROGRESS, REVIEW, DONE)
+            DONE -> toStatus in listOf(TO_DO, DONE)
         }
     }
 

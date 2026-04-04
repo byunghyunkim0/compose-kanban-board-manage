@@ -24,7 +24,8 @@ class ModalCreateFormState(val assignees: List<String>, val initialCard: KanbanC
     var tag by mutableStateOf(initialCard?.tags?.joinToString(",") ?: "")
     var status by mutableIntStateOf(initialCard?.status?.let { KanbanStatus.entries.indexOf(it) } ?: 0)
     var assignee by mutableStateOf(
-        initialCard?.assigneeName?.let { assignees.indexOf(it) } ?: if (initialCard?.status == KanbanStatus.TO_DO || initialCard == null) null else 0
+        initialCard?.assigneeName?.let { assignees.indexOf(it) }
+            ?: if (initialCard?.status == KanbanStatus.TO_DO || initialCard == null) null else 0,
     )
 
     var validTitle: KanbanCardError? by mutableStateOf(null)

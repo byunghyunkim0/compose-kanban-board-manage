@@ -43,9 +43,13 @@ fun KanbanProjectScreen(kanbanProjectState: KanbanProjectState, modifier: Modifi
         ModalEditForm(
             state = modalCreateFormState,
             onDismissRequest = { kanbanProjectState.isShowEditModal = false },
-            onEdit = {},
-            onDelete = {},
-            modifier = Modifier.width(672.dp).height(820.dp)
+            onEdit = { card ->
+                kanbanProjectState.onEdit(card)
+            },
+            onDelete = {
+                kanbanProjectState.onDelete()
+            },
+            modifier = Modifier.width(672.dp).height(820.dp),
         )
     }
     Scaffold(

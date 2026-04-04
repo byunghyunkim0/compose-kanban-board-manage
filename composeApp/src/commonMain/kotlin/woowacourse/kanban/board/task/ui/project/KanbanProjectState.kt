@@ -82,13 +82,76 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
         }
     }
 
+    fun onEdit(kanbanCard: KanbanCard) {
+        val editCard = editingCard ?: return
+        val projectResult = kanbanProject.updateCard(
+            boardId = selectedBoard,
+            cardId = editCard.id,
+            card = kanbanCard,
+        )
+        when (projectResult) {
+            is KanbanProjectResult.Failure -> {
+                val message = getErrorMessage(projectResult.error)
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        message = message,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+            is KanbanProjectResult.Success -> {
+                kanbanProject = projectResult.project
+                isShowEditModal = false
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        message = "태스크가 수정되었습니다.",
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+        }
+    }
+
+    fun onDelete() {
+        val editCard = editingCard ?: return
+        val projectResult = kanbanProject.deleteCard(
+            boardId = selectedBoard,
+            cardId = editCard.id,
+        )
+        when (projectResult) {
+            is KanbanProjectResult.Failure -> {
+                val message = getErrorMessage(projectResult.error)
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        message = message,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+            is KanbanProjectResult.Success -> {
+                kanbanProject = projectResult.project
+                isShowEditModal = false
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        message = "태스크가 삭제되었습니다.",
+                        duration = SnackbarDuration.Short,
+                    )
+                }
+            }
+        }
+    }
+
     fun onUpdateStatus(card: KanbanCard, targetStatus: KanbanStatus) {
         val updateProject = kanbanProject.updateCardStatus(
             boardId = selectedBoard,
             cardId = card.id,
             status = targetStatus,
         )
-        when(updateProject) {
+        when (updateProject) {
             is KanbanProjectResult.Failure -> {
                 val message = getErrorMessage(updateProject.error)
                 coroutineScope.launch {
@@ -114,7 +177,7 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
         if (updateProject is KanbanProjectResult.Success) kanbanProject = updateProject.project
     }
 
-    private fun getErrorMessage(kanbanError: KanbanError) = when(kanbanError) {
+    private fun getErrorMessage(kanbanError: KanbanError) = when (kanbanError) {
         KanbanError.INVALID_TRANSITION -> "해당 상태로 옮길 수 없습니다."
         KanbanError.ASSIGNEE_REQUIRED -> "담당자를 지정해야 상태를 옮길 수 있습니다."
         KanbanError.DELETION_NOT_ALLOWED -> "해당 상태에서는 태스크 삭제가 불가합니다."

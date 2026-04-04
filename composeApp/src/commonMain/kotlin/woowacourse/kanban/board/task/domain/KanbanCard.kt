@@ -18,7 +18,7 @@ data class KanbanCard(
     }
 
     fun deleteCard(): KanbanCardResult {
-        if (status.isDeletable()) return KanbanCardResult.Failure(KanbanError.DELETION_NOT_ALLOWED)
+        if (!status.isDeletable()) return KanbanCardResult.Failure(KanbanError.DELETION_NOT_ALLOWED)
         return KanbanCardResult.Success(copy())
     }
 
@@ -30,6 +30,31 @@ data class KanbanCard(
             return KanbanCardResult.Failure(KanbanError.ASSIGNEE_REQUIRED)
         }
         return KanbanCardResult.Success(copy(status = toStatus))
+    }
+
+    fun updateCard(
+        title: String,
+        assigneeName: String?,
+        status: KanbanStatus,
+        content: String = "",
+        tags: List<String> = emptyList(),
+    ): KanbanCardResult {
+        if (!this.status.isTranslationStatus(status)) {
+            return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)
+        }
+        if (status.isAssigneeRequired() && assigneeName == null) {
+            return KanbanCardResult.Failure(KanbanError.ASSIGNEE_REQUIRED)
+        }
+
+        return KanbanCardResult.Success(
+            copy(
+                title = title,
+                assigneeName = assigneeName,
+                status = status,
+                content = content,
+                tags = tags,
+            ),
+        )
     }
 
     private fun isTranslationStatusWithAssignee(toStatus: KanbanStatus) = !(toStatus.isAssigneeRequired() && assigneeName == null)

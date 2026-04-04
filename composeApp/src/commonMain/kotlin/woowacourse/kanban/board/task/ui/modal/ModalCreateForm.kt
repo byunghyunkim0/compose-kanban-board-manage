@@ -13,13 +13,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import woowacourse.kanban.board.task.domain.KanbanCard
-import woowacourse.kanban.board.task.domain.TaskMockData
-
 import kanbanboard.composeapp.generated.resources.Res
 import kanbanboard.composeapp.generated.resources.modal_title_edit_task
 import kanbanboard.composeapp.generated.resources.modal_title_new_task
 import org.jetbrains.compose.resources.stringResource
+import woowacourse.kanban.board.task.domain.KanbanCard
+import woowacourse.kanban.board.task.domain.TaskMockData
 
 @Composable
 fun ModalCreateForm(
@@ -43,7 +42,7 @@ fun ModalCreateForm(
         ) {
             ModalHeader(
                 title = stringResource(Res.string.modal_title_new_task),
-                onDismissRequest = onDismissRequest
+                onDismissRequest = onDismissRequest,
             )
 
             HorizontalDivider(
@@ -94,7 +93,7 @@ fun ModalEditForm(
         ) {
             ModalHeader(
                 title = stringResource(Res.string.modal_title_edit_task),
-                onDismissRequest = onDismissRequest
+                onDismissRequest = onDismissRequest,
             )
 
             HorizontalDivider(
@@ -142,7 +141,7 @@ private fun ModalCreateFormPreview() {
 private fun ModalEditFormPreview() {
     ModalEditForm(
         state = RememberModalCreateFormState(
-            assignees = TaskMockData.assignees
+            assignees = TaskMockData.assignees,
         ),
         onDismissRequest = {},
         onEdit = {},

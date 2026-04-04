@@ -17,6 +17,19 @@ data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard>
         }
     }
 
+    fun updateCard(boardId: Int, cardId: String, card: KanbanCard): KanbanProjectResult {
+        val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        return when (val boardResult = targetBoard.updateCard(cardId = cardId, updatedCard = card)) {
+            is KanbanBoardResult.Failure -> KanbanProjectResult.Failure(boardResult.error)
+            is KanbanBoardResult.Success -> {
+                val newBoard = boards.map {
+                    if (it.boardId == boardId) boardResult.board else it
+                }
+                KanbanProjectResult.Success(copy(boards = newBoard))
+            }
+        }
+    }
+
     fun addBoardCard(boardId: Int, card: KanbanCard): KanbanProjectResult {
         val targetBoard = getBoard(boardId) ?: return KanbanProjectResult.Failure(KanbanError.KANBAN_NOT_FOUND)
         return when (val boardResult = targetBoard.addCard(card)) {

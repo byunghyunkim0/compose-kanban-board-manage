@@ -24,6 +24,25 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
         }
     }
 
+    fun updateCard(cardId: String, updatedCard: KanbanCard): KanbanBoardResult {
+        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        return when (
+            val cardResult = targetCard.updateCard(
+                title = updatedCard.title,
+                assigneeName = updatedCard.assigneeName,
+                status = updatedCard.status,
+                content = updatedCard.content,
+                tags = updatedCard.tags,
+            )
+        ) {
+            is KanbanCardResult.Failure -> KanbanBoardResult.Failure(cardResult.error)
+            is KanbanCardResult.Success -> {
+                val newCards = cards.map { if (it.id == cardId) cardResult.card else it }
+                KanbanBoardResult.Success(copy(cards = newCards))
+            }
+        }
+    }
+
     fun deleteCard(cardId: String): KanbanBoardResult {
         val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
         return when (val cardResult = targetCard.deleteCard()) {
