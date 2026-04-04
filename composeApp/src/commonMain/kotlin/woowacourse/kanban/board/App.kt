@@ -6,7 +6,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
 import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.TaskMockData
-import woowacourse.kanban.board.task.ui.modal.RememberModalCreateFormState
 import woowacourse.kanban.board.task.ui.project.KanbanProjectScreen
 import woowacourse.kanban.board.task.ui.project.RememberKanbanProjectState
 

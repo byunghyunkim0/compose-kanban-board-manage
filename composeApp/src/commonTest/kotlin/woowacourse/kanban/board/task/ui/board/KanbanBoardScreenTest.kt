@@ -10,7 +10,6 @@ import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
 import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.TaskMockData
-import woowacourse.kanban.board.task.ui.modal.RememberModalCreateFormState
 import woowacourse.kanban.board.task.ui.project.RememberKanbanProjectState
 
 @OptIn(ExperimentalTestApi::class)
@@ -27,7 +26,6 @@ class KanbanBoardScreenTest {
                 ),
             )
             KanbanBoardScreen(
-                modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
                 kanbanProjectState = kanbanProjectState,
             )
         }
@@ -48,7 +46,6 @@ class KanbanBoardScreenTest {
                 ),
             )
             KanbanBoardScreen(
-                modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
                 kanbanProjectState = kanbanProjectState,
             )
         }
@@ -73,7 +70,6 @@ class KanbanBoardScreenTest {
                 ),
             )
             KanbanBoardScreen(
-                modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
                 kanbanProjectState = kanbanProjectState,
             )
         }
@@ -96,7 +92,6 @@ class KanbanBoardScreenTest {
                 ),
             )
             KanbanBoardScreen(
-                modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
                 kanbanProjectState = kanbanProjectState,
             )
         }

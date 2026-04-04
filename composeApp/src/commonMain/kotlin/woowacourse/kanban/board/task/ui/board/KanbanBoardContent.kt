@@ -215,7 +215,7 @@ private fun KanbanBoardStatusColumn(
                             RoundedCornerShape(10.dp),
                         )
                         .clickable(onClick = {
-                            kanbanProjectState.isShowEditModal = true
+                            kanbanProjectState.showEditModal(it)
                         }),
                     kanbanCard = it,
                     onDragStart = onTaskDragStart,

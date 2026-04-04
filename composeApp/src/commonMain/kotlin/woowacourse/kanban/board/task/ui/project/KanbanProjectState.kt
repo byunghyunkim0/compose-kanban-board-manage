@@ -51,9 +51,15 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
     var isShowCreateModal by mutableStateOf(false)
 
     var isShowEditModal by mutableStateOf(false)
+    var editingCard by mutableStateOf<KanbanCard?>(null)
 
     fun onSelectBoard(index: Int) {
         selectedBoard = index
+    }
+
+    fun showEditModal(card: KanbanCard) {
+        editingCard = card
+        isShowEditModal = true
     }
 
     fun onAddCard(boardId: Int, card: KanbanCard) {

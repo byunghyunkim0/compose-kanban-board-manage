@@ -36,7 +36,10 @@ fun KanbanProjectScreen(kanbanProjectState: KanbanProjectState, modifier: Modifi
     }
 
     if (kanbanProjectState.isShowEditModal) {
-        val modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees)
+        val modalCreateFormState = RememberModalCreateFormState(
+            assignees = TaskMockData.assignees,
+            initialCard = kanbanProjectState.editingCard,
+        )
         ModalEditForm(
             state = modalCreateFormState,
             onDismissRequest = { kanbanProjectState.isShowEditModal = false },
