@@ -14,7 +14,6 @@ import woowacourse.kanban.board.task.ui.project.RememberKanbanProjectState
 @Preview(widthDp = 1300, heightDp = 900)
 fun App() {
     MaterialTheme {
-        val modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees)
         val coroutineScope = rememberCoroutineScope()
         val kanbanProject = KanbanProject(
             projectTitle = "4주차 미션 보드",
@@ -25,7 +24,6 @@ fun App() {
             kanbanProject = kanbanProject,
         )
         KanbanProjectScreen(
-            modalCreateFormState = modalCreateFormState,
             kanbanProjectState = kanbanProjectState,
         )
     }

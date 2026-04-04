@@ -3,6 +3,7 @@ package woowacourse.kanban.board.task.ui.board
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,8 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,9 +29,6 @@ import woowacourse.kanban.board.task.domain.KanbanCard
 import woowacourse.kanban.board.task.domain.KanbanProject
 import woowacourse.kanban.board.task.domain.KanbanStatus
 import woowacourse.kanban.board.task.domain.TaskMockData
-import woowacourse.kanban.board.task.ui.modal.ModalCreateForm
-import woowacourse.kanban.board.task.ui.modal.ModalCreateFormState
-import woowacourse.kanban.board.task.ui.modal.RememberModalCreateFormState
 import woowacourse.kanban.board.task.ui.project.KanbanProjectState
 import woowacourse.kanban.board.task.ui.project.RememberKanbanProjectState
 import woowacourse.kanban.board.theme.BoardBackground
@@ -40,7 +36,6 @@ import woowacourse.kanban.board.theme.SnackBarBackground
 
 @Composable
 fun KanbanBoardScreen(
-    modalCreateFormState: ModalCreateFormState,
     kanbanProjectState: KanbanProjectState,
     modifier: Modifier = Modifier,
     getIsDropTarget: (KanbanStatus) -> Boolean = { false },
@@ -52,47 +47,24 @@ fun KanbanBoardScreen(
 ) {
     val currentBoard = kanbanProjectState.kanbanBoard
     if (currentBoard != null) {
-        if (kanbanProjectState.isShowModal) {
-            ModalCreateForm(
-                state = modalCreateFormState,
-                onDismissRequest = { kanbanProjectState.isShowModal = false },
-                onCreate = { card ->
-                    kanbanProjectState.onCreate(card)
-                },
-                modifier = Modifier.width(672.dp).height(820.dp),
+        Column(
+            modifier = modifier
+        ) {
+            KanbanBoardHeader(
+                modifier = Modifier.padding(
+                    vertical = 16.dp,
+                    horizontal = 24.dp,
+                ),
+                title = currentBoard.title,
+                doneCount = currentBoard.doneCount,
+                totalCount = currentBoard.totalCount,
+                progress = currentBoard.progress,
+                onCreateClick = { kanbanProjectState.isShowCreateModal = true },
             )
-        }
 
-        Scaffold(
-            modifier = modifier,
-            containerColor = Color.White,
-            snackbarHost = {
-                SnackbarHost(hostState = kanbanProjectState.snackbarHostState) { snackbarData ->
-                    SnackBarCard(
-                        modifier = Modifier,
-                        message = snackbarData.visuals.message,
-                        onDismiss = { snackbarData.dismiss() },
-                    )
-                }
-            },
-            topBar = {
-                KanbanBoardHeader(
-                    modifier = Modifier.padding(
-                        vertical = 16.dp,
-                        horizontal = 24.dp,
-                    ),
-                    title = currentBoard.title,
-                    doneCount = currentBoard.doneCount,
-                    totalCount = currentBoard.totalCount,
-                    progress = currentBoard.progress,
-                    onCreateClick = { kanbanProjectState.isShowModal = true },
-                )
-            },
-        ) { paddingValues ->
             KanbanBoardContent(
                 kanbanProjectState = kanbanProjectState,
                 modifier = Modifier
-                    .padding(paddingValues)
                     .fillMaxWidth()
                     .background(BoardBackground)
                     .padding(24.dp),
@@ -108,7 +80,7 @@ fun KanbanBoardScreen(
 }
 
 @Composable
-private fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .width(344.dp)
@@ -146,7 +118,6 @@ private fun SnackBarCard(message: String, onDismiss: () -> Unit, modifier: Modif
 @Composable
 private fun KanbanBoardScreenPreview() {
     KanbanBoardScreen(
-        modalCreateFormState = RememberModalCreateFormState(TaskMockData.assignees),
         kanbanProjectState = RememberKanbanProjectState(
             coroutineScope = rememberCoroutineScope(),
             kanbanProject = KanbanProject(

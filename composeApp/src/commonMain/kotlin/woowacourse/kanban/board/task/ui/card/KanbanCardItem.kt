@@ -1,14 +1,10 @@
 package woowacourse.kanban.board.task.ui.card
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,16 +41,6 @@ fun KanbanCardItem(
 
     Column(
         modifier = modifier
-            .width(286.dp)
-            .background(
-                Color.White,
-                RoundedCornerShape(10.dp),
-            )
-            .border(
-                Dp.Hairline,
-                Color.Gray,
-                RoundedCornerShape(10.dp),
-            )
             .onGloballyPositioned { cardWindowPosition = it.positionInWindow() }
             .pointerInput(Unit) {
                 detectDragGestures(
@@ -80,12 +66,14 @@ fun KanbanCardItem(
             KanbanCardTags(kanbanCard.tags)
         }
 
-        HorizontalDivider(
-            thickness = Dp.Hairline,
-            color = Color.LightGray,
-        )
+        if (kanbanCard.assigneeName != null) {
+            HorizontalDivider(
+                thickness = Dp.Hairline,
+                color = Color.LightGray,
+            )
 
-        KanbanCardProfile(kanbanCard.assigneeName)
+            KanbanCardProfile(kanbanCard.assigneeName)
+        }
     }
 }
 

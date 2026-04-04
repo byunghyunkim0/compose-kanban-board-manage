@@ -48,7 +48,9 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
     var currentDragPosition by mutableStateOf<Offset?>(null)
     val columnBounds = mutableStateMapOf<KanbanStatus, Rect>()
 
-    var isShowModal by mutableStateOf(false)
+    var isShowCreateModal by mutableStateOf(false)
+
+    var isShowEditModal by mutableStateOf(false)
 
     fun onSelectBoard(index: Int) {
         selectedBoard = index
@@ -64,7 +66,7 @@ class KanbanProjectState(val snackbarHostState: SnackbarHostState, val coroutine
 
     fun onCreate(card: KanbanCard) {
         onAddCard(selectedBoard, card)
-        isShowModal = false
+        isShowCreateModal = false
         coroutineScope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
             snackbarHostState.showSnackbar(

@@ -2,6 +2,7 @@ package woowacourse.kanban.board.task.ui.board
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kanbanboard.composeapp.generated.resources.Res
@@ -201,6 +203,20 @@ private fun KanbanBoardStatusColumn(
                 items = cards,
             ) {
                 KanbanCardItem(
+                    modifier = Modifier
+                        .width(286.dp)
+                        .background(
+                            Color.White,
+                            RoundedCornerShape(10.dp),
+                        )
+                        .border(
+                            Dp.Hairline,
+                            Color.Gray,
+                            RoundedCornerShape(10.dp),
+                        )
+                        .clickable(onClick = {
+                            kanbanProjectState.isShowEditModal = true
+                        }),
                     kanbanCard = it,
                     onDragStart = onTaskDragStart,
                     onDragChange = onTaskDragChange,
