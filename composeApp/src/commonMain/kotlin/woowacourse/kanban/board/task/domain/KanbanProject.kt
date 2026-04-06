@@ -1,6 +1,12 @@
 package woowacourse.kanban.board.task.domain
 
-data class KanbanProject(val projectTitle: String, val boards: List<KanbanBoard> = emptyList()) {
+import java.util.UUID
+
+data class KanbanProject(
+    val id: String = UUID.randomUUID().toString(),
+    val projectTitle: String,
+    val boards: List<KanbanBoard> = emptyList(),
+) {
     val boardTitles: List<String> = boards.map { it.title }
     fun getBoard(boardId: Int): KanbanBoard? = boards.find { it.boardId == boardId }
 

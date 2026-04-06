@@ -20,10 +20,7 @@ import woowacourse.kanban.board.task.domain.KanbanStatus
  * @param tags 최대 5개까지만 표시되는 태그 리스트입니다. 5개를 초과하면 상위 5개만 렌더링됩니다.
  */
 @Composable
-fun KanbanCardItem(
-    kanbanCard: KanbanCard,
-    modifier: Modifier = Modifier,
-) {
+fun KanbanCardItem(kanbanCard: KanbanCard, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
