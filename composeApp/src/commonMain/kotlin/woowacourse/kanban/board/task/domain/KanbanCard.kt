@@ -19,10 +19,10 @@ data class KanbanCard(
 
     fun updateStatus(toStatus: KanbanStatus): KanbanCardResult {
         if (!status.isTransitionStatus(toStatus)) {
-            return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)
+            return KanbanCardResult.Failure.InvalidTransition(status, toStatus)
         }
         if (!isTranslationStatusWithAssignee(toStatus)) {
-            return KanbanCardResult.Failure(KanbanError.ASSIGNEE_REQUIRED)
+            return KanbanCardResult.Failure.AssigneeRequired(status)
         }
         return KanbanCardResult.Success(copy(status = toStatus))
     }
@@ -35,10 +35,10 @@ data class KanbanCard(
         tags: List<String> = emptyList(),
     ): KanbanCardResult {
         if (!this.status.isTransitionStatus(status)) {
-            return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)
+            return KanbanCardResult.Failure.InvalidTransition(this.status, status)
         }
         if (status.isAssigneeRequired && assigneeName == null) {
-            return KanbanCardResult.Failure(KanbanError.ASSIGNEE_REQUIRED)
+            return KanbanCardResult.Failure.AssigneeRequired(status)
         }
 
         return KanbanCardResult.Success(

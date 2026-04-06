@@ -1,16 +1,72 @@
 package woowacourse.kanban.board.task.domain
 
-sealed class KanbanCardResult {
-    data class Success(val card: KanbanCard) : KanbanCardResult()
-    data class Failure(val error: KanbanError) : KanbanCardResult()
+sealed interface KanbanCardResult {
+    data class Success(val card: KanbanCard) : KanbanCardResult
+    sealed interface Failure : KanbanCardResult {
+        val error: KanbanError
+
+        data class InvalidTransition(val status: KanbanStatus, val toStatus: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.INVALID_TRANSITION
+        }
+
+        data class AssigneeRequired(val status: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.ASSIGNEE_REQUIRED
+        }
+    }
 }
 
-sealed class KanbanBoardResult {
-    data class Success(val board: KanbanBoard) : KanbanBoardResult()
-    data class Failure(val error: KanbanError) : KanbanBoardResult()
+sealed interface KanbanBoardResult {
+    data class Success(val board: KanbanBoard) : KanbanBoardResult
+    sealed interface Failure : KanbanBoardResult {
+        val error: KanbanError
+
+        data class NotFound(val type: String, val id: String) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.KANBAN_NOT_FOUND
+        }
+
+        data class InvalidTransition(val status: KanbanStatus, val toStatus: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.INVALID_TRANSITION
+        }
+
+        data class AssigneeRequired(val status: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.ASSIGNEE_REQUIRED
+        }
+
+        data class DeletionNotAllowed(val status: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.DELETION_NOT_ALLOWED
+        }
+    }
 }
 
-sealed class KanbanProjectResult {
-    data class Success(val project: KanbanProject) : KanbanProjectResult()
-    data class Failure(val error: KanbanError) : KanbanProjectResult()
+sealed interface KanbanProjectResult {
+    data class Success(val project: KanbanProject) : KanbanProjectResult
+    sealed interface Failure : KanbanProjectResult {
+        val error: KanbanError
+
+        data class NotFound(val type: String, val id: String) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.KANBAN_NOT_FOUND
+        }
+
+        data class InvalidTransition(val status: KanbanStatus, val toStatus: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.INVALID_TRANSITION
+        }
+
+        data class AssigneeRequired(val status: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.ASSIGNEE_REQUIRED
+        }
+
+        data class DeletionNotAllowed(val status: KanbanStatus) : Failure {
+            override val error: KanbanError
+                get() = KanbanError.DELETION_NOT_ALLOWED
+        }
+    }
 }

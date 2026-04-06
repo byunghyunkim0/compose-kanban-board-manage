@@ -14,9 +14,9 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
     }
 
     fun updateCardStatus(cardId: String, status: KanbanStatus): KanbanBoardResult {
-        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure.NotFound(type = "Card", id = cardId)
         return when (val cardResult = targetCard.updateStatus(status)) {
-            is KanbanCardResult.Failure -> KanbanBoardResult.Failure(cardResult.error)
+            is KanbanCardResult.Failure -> cardResult.toBoardFailure()
             is KanbanCardResult.Success -> {
                 val newCards = cards.map { if (it.id == cardId) cardResult.card else it }
                 KanbanBoardResult.Success(copy(cards = newCards))
@@ -25,7 +25,7 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
     }
 
     fun updateCard(cardId: String, updatedCard: KanbanCard): KanbanBoardResult {
-        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure.NotFound(type = "Card", id = cardId)
         return when (
             val cardResult = targetCard.updateCard(
                 title = updatedCard.title,
@@ -35,7 +35,7 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
                 tags = updatedCard.tags,
             )
         ) {
-            is KanbanCardResult.Failure -> KanbanBoardResult.Failure(cardResult.error)
+            is KanbanCardResult.Failure -> cardResult.toBoardFailure()
             is KanbanCardResult.Success -> {
                 val newCards = cards.map { if (it.id == cardId) cardResult.card else it }
                 KanbanBoardResult.Success(copy(cards = newCards))
@@ -44,9 +44,16 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
     }
 
     fun deleteCard(cardId: String): KanbanBoardResult {
-        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        if (!targetCard.status.isDeletable) return KanbanBoardResult.Failure(KanbanError.DELETION_NOT_ALLOWED)
+        val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure.NotFound(type = "Card", id = cardId)
+        if (!targetCard.status.isDeletable) return KanbanBoardResult.Failure.DeletionNotAllowed(targetCard.status)
         val newCards = cards.filter { it.id != targetCard.id }
         return KanbanBoardResult.Success(copy(cards = newCards))
+    }
+
+    private fun KanbanCardResult.Failure.toBoardFailure(): KanbanBoardResult.Failure {
+        return when (this) {
+            is KanbanCardResult.Failure.AssigneeRequired -> KanbanBoardResult.Failure.AssigneeRequired(this.status)
+            is KanbanCardResult.Failure.InvalidTransition -> KanbanBoardResult.Failure.InvalidTransition(this.status, this.toStatus)
+        }
     }
 }
