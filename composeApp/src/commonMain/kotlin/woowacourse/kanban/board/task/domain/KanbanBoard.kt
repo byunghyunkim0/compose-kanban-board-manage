@@ -45,6 +45,7 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
 
     fun deleteCard(cardId: String): KanbanBoardResult {
         val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
+        if (!targetCard.status.isDeletable) return KanbanBoardResult.Failure(KanbanError.DELETION_NOT_ALLOWED)
         val newCards = cards.filter { it.id != targetCard.id }
         return KanbanBoardResult.Success(copy(cards = newCards))
     }

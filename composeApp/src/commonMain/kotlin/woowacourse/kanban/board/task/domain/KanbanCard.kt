@@ -18,7 +18,7 @@ data class KanbanCard(
     }
 
     fun updateStatus(toStatus: KanbanStatus): KanbanCardResult {
-        if (!status.isTranslationStatus(toStatus)) {
+        if (!status.isTransitionStatus(toStatus)) {
             return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)
         }
         if (!isTranslationStatusWithAssignee(toStatus)) {
@@ -34,10 +34,10 @@ data class KanbanCard(
         content: String = "",
         tags: List<String> = emptyList(),
     ): KanbanCardResult {
-        if (!this.status.isTranslationStatus(status)) {
+        if (!this.status.isTransitionStatus(status)) {
             return KanbanCardResult.Failure(KanbanError.INVALID_TRANSITION)
         }
-        if (status.isAssigneeRequired() && assigneeName == null) {
+        if (status.isAssigneeRequired && assigneeName == null) {
             return KanbanCardResult.Failure(KanbanError.ASSIGNEE_REQUIRED)
         }
 
@@ -52,7 +52,7 @@ data class KanbanCard(
         )
     }
 
-    private fun isTranslationStatusWithAssignee(toStatus: KanbanStatus) = !(toStatus.isAssigneeRequired() && assigneeName == null)
+    private fun isTranslationStatusWithAssignee(toStatus: KanbanStatus) = !(toStatus.isAssigneeRequired && assigneeName == null)
 
     companion object {
         private const val MAX_TAG_COUNT = 5

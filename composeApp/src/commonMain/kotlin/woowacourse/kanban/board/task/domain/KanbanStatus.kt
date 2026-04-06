@@ -1,36 +1,23 @@
 package woowacourse.kanban.board.task.domain
 
-enum class KanbanStatus {
-    TO_DO,
-    IN_PROGRESS,
-    REVIEW,
-    DONE,
+enum class KanbanStatus(val isDeletable: Boolean, val isAssigneeRequired: Boolean) {
+    TO_DO(isDeletable = true, isAssigneeRequired = false),
+    IN_PROGRESS(isDeletable = true, isAssigneeRequired = true),
+    REVIEW(isDeletable = false, isAssigneeRequired = true),
+    DONE(isDeletable = false, isAssigneeRequired = true),
     ;
 
-    fun isTranslationStatus(toStatus: KanbanStatus): Boolean {
-        return when (this) {
-            TO_DO -> toStatus in listOf(TO_DO, IN_PROGRESS)
-            IN_PROGRESS -> toStatus in listOf(TO_DO, IN_PROGRESS, REVIEW)
-            REVIEW -> toStatus in listOf(IN_PROGRESS, REVIEW, DONE)
-            DONE -> toStatus in listOf(TO_DO, DONE)
-        }
+    fun isTransitionStatus(toStatus: KanbanStatus): Boolean {
+        val canTransitionStatus = TRANSITION_RULES[this] ?: emptyList()
+        return canTransitionStatus.contains(toStatus)
     }
 
-    fun isDeletable(): Boolean {
-        return when (this) {
-            TO_DO -> true
-            IN_PROGRESS -> true
-            REVIEW -> false
-            DONE -> false
-        }
-    }
-
-    fun isAssigneeRequired(): Boolean {
-        return when (this) {
-            TO_DO -> false
-            IN_PROGRESS -> true
-            REVIEW -> true
-            DONE -> true
-        }
+    companion object {
+        private val TRANSITION_RULES = mapOf(
+            TO_DO to listOf(TO_DO, IN_PROGRESS),
+            IN_PROGRESS to listOf(TO_DO, IN_PROGRESS, REVIEW),
+            REVIEW to listOf(IN_PROGRESS, REVIEW, DONE),
+            DONE to listOf(TO_DO, DONE),
+        )
     }
 }
