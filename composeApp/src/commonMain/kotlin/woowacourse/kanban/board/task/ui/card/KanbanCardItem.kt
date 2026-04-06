@@ -13,34 +13,32 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import woowacourse.kanban.board.task.domain.KanbanCard
-import woowacourse.kanban.board.task.domain.KanbanStatus
 
 /**
  * @param tags 최대 5개까지만 표시되는 태그 리스트입니다. 5개를 초과하면 상위 5개만 렌더링됩니다.
  */
 @Composable
-fun KanbanCardItem(kanbanCard: KanbanCard, modifier: Modifier = Modifier) {
+fun KanbanCardItem(title: String, content: String, tags: List<String>, assigneeName: String?, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        KanbanCardTitle(kanbanCard.title)
+        KanbanCardTitle(title)
 
-        if (kanbanCard.content.isNotBlank()) {
-            KanbanCardContent(kanbanCard.content)
+        if (content.isNotBlank()) {
+            KanbanCardContent(content)
         }
 
-        if (kanbanCard.tags.isNotEmpty()) {
-            KanbanCardTags(kanbanCard.tags)
+        if (tags.isNotEmpty()) {
+            KanbanCardTags(tags)
         }
 
-        if (kanbanCard.assigneeName != null) {
+        if (assigneeName != null) {
             HorizontalDivider(
                 thickness = Dp.Hairline,
                 color = Color.LightGray,
             )
-            KanbanCardProfile(kanbanCard.assigneeName)
+            KanbanCardProfile(assigneeName)
         }
     }
 }
@@ -82,13 +80,10 @@ private class KanbanCardPreviewParameterProvider : PreviewParameterProvider<Kanb
 private fun KanbanCardPreview(@PreviewParameter(KanbanCardPreviewParameterProvider::class) kanbanCardInfo: KanbanCardInfo) {
     Box(modifier = Modifier.padding(12.dp)) {
         KanbanCardItem(
-            kanbanCard = KanbanCard(
-                title = kanbanCardInfo.title,
-                assigneeName = kanbanCardInfo.crewName,
-                tags = kanbanCardInfo.tags,
-                content = kanbanCardInfo.content,
-                status = KanbanStatus.TO_DO,
-            ),
+            title = kanbanCardInfo.title,
+            assigneeName = kanbanCardInfo.crewName,
+            tags = kanbanCardInfo.tags,
+            content = kanbanCardInfo.content,
         )
     }
 }
@@ -98,18 +93,15 @@ private fun KanbanCardPreview(@PreviewParameter(KanbanCardPreviewParameterProvid
 private fun KanbanCardMaxPreview() {
     Box(modifier = Modifier.padding(12.dp)) {
         KanbanCardItem(
-            kanbanCard = KanbanCard(
-                title = "너무너무 긴 제목은 한 줄까지만 노출합니다. 그렇습니다. 감사합니다.",
-                assigneeName = "바드바드바드바드바드바드바드바드바드바드바드바드바드바드",
-                tags = listOf(
-                    "컴포넌트",
-                    "성능",
-                    "긴 태그",
-                    "최대로",
-                ),
-                content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.".repeat(3),
-                status = KanbanStatus.TO_DO,
+            title = "너무너무 긴 제목은 한 줄까지만 노출합니다. 그렇습니다. 감사합니다.",
+            assigneeName = "바드바드바드바드바드바드바드바드바드바드바드바드바드바드",
+            tags = listOf(
+                "컴포넌트",
+                "성능",
+                "긴 태그",
+                "최대로",
             ),
+            content = "세로 스크롤 가능한 리스트 컴포넌트를 만들고 성능 최적화를 적용합니다.".repeat(3),
         )
     }
 }

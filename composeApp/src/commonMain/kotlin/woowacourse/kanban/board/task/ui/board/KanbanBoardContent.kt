@@ -76,23 +76,21 @@ fun KanbanBoardContent(
     onTaskDragEnd: () -> Unit = {},
     onTaskDragCancel: () -> Unit = {},
 ) {
-    if (kanbanProjectState.kanbanBoard != null) {
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            KanbanStatus.entries.forEach { status ->
-                KanbanBoardStatusColumn(
-                    status = status,
-                    kanbanProjectState = kanbanProjectState,
-                    getIsDropTarget = getIsDropTarget,
-                    onBoundsChanged = onBoundsChanged,
-                    onTaskDragStart = onTaskDragStart,
-                    onTaskDragChange = onTaskDragChange,
-                    onTaskDragEnd = onTaskDragEnd,
-                    onTaskDragCancel = onTaskDragCancel,
-                )
-            }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        KanbanStatus.entries.forEach { status ->
+            KanbanBoardStatusColumn(
+                status = status,
+                kanbanProjectState = kanbanProjectState,
+                getIsDropTarget = getIsDropTarget,
+                onBoundsChanged = onBoundsChanged,
+                onTaskDragStart = onTaskDragStart,
+                onTaskDragChange = onTaskDragChange,
+                onTaskDragEnd = onTaskDragEnd,
+                onTaskDragCancel = onTaskDragCancel,
+            )
         }
     }
 }
@@ -220,9 +218,11 @@ private fun KanbanBoardStatusColumn(
                             Color.Gray,
                             RoundedCornerShape(10.dp),
                         )
-                        .clickable(onClick = {
-                            kanbanProjectState.showEditModal(card)
-                        })
+                        .clickable(
+                            onClick = {
+                                kanbanProjectState.showEditModal(card)
+                            },
+                        )
                         .onGloballyPositioned { cardWindowPosition = it.positionInWindow() }
                         .pointerInput(Unit) {
                             detectDragGestures(
@@ -235,7 +235,10 @@ private fun KanbanBoardStatusColumn(
                                 onDragCancel = { onTaskDragCancel() },
                             )
                         },
-                    kanbanCard = card,
+                    title = card.title,
+                    content = card.content,
+                    tags = card.tags,
+                    assigneeName = card.assigneeName,
                 )
             }
         }
