@@ -45,12 +45,7 @@ data class KanbanBoard(val boardId: Int, val title: String, val cards: List<Kanb
 
     fun deleteCard(cardId: String): KanbanBoardResult {
         val targetCard = getCard(cardId) ?: return KanbanBoardResult.Failure(KanbanError.KANBAN_NOT_FOUND)
-        return when (val cardResult = targetCard.deleteCard()) {
-            is KanbanCardResult.Failure -> KanbanBoardResult.Failure(cardResult.error)
-            is KanbanCardResult.Success -> {
-                val newCards = cards.filter { it.id != cardResult.card.id }
-                KanbanBoardResult.Success(copy(cards = newCards))
-            }
-        }
+        val newCards = cards.filter { it.id != targetCard.id }
+        return KanbanBoardResult.Success(copy(cards = newCards))
     }
 }
