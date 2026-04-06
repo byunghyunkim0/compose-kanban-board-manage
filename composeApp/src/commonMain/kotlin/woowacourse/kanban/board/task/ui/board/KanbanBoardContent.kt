@@ -3,6 +3,7 @@ package woowacourse.kanban.board.task.ui.board
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,14 +23,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -107,6 +111,8 @@ private fun KanbanBoardStatusColumn(
     onTaskDragEnd: () -> Unit = {},
     onTaskDragCancel: () -> Unit = {},
 ) {
+    var cardWindowPosition by remember { mutableStateOf(Offset.Zero) }
+
     val (title, color) = when (status) {
         KanbanStatus.TO_DO -> stringResource(Res.string.status_to_do) to ColumnColors(
             headerColor = TodoColumnHeaderBackground,
@@ -201,7 +207,7 @@ private fun KanbanBoardStatusColumn(
             items(
                 key = { it.id },
                 items = cards,
-            ) {
+            ) { card ->
                 KanbanCardItem(
                     modifier = Modifier
                         .width(286.dp)
@@ -215,13 +221,21 @@ private fun KanbanBoardStatusColumn(
                             RoundedCornerShape(10.dp),
                         )
                         .clickable(onClick = {
-                            kanbanProjectState.showEditModal(it)
-                        }),
-                    kanbanCard = it,
-                    onDragStart = onTaskDragStart,
-                    onDragChange = onTaskDragChange,
-                    onDragEnd = onTaskDragEnd,
-                    onDragCancel = onTaskDragCancel,
+                            kanbanProjectState.showEditModal(card)
+                        })
+                        .onGloballyPositioned { cardWindowPosition = it.positionInWindow() }
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { onTaskDragStart(card) },
+                                onDrag = { change, _ ->
+                                    change.consume()
+                                    onTaskDragChange(cardWindowPosition + change.position)
+                                },
+                                onDragEnd = { onTaskDragEnd() },
+                                onDragCancel = { onTaskDragCancel() },
+                            )
+                        },
+                    kanbanCard = card,
                 )
             }
         }

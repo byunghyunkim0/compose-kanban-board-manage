@@ -1,22 +1,13 @@
 package woowacourse.kanban.board.task.ui.card
 
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -32,28 +23,9 @@ import woowacourse.kanban.board.task.domain.KanbanStatus
 fun KanbanCardItem(
     kanbanCard: KanbanCard,
     modifier: Modifier = Modifier,
-    onDragStart: (KanbanCard) -> Unit = {},
-    onDragChange: (Offset) -> Unit = {},
-    onDragEnd: () -> Unit = {},
-    onDragCancel: () -> Unit = {},
 ) {
-    var cardWindowPosition by remember { mutableStateOf(Offset.Zero) }
-
     Column(
-        modifier = modifier
-            .onGloballyPositioned { cardWindowPosition = it.positionInWindow() }
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { onDragStart(kanbanCard) },
-                    onDrag = { change, _ ->
-                        change.consume()
-                        onDragChange(cardWindowPosition + change.position)
-                    },
-                    onDragEnd = { onDragEnd() },
-                    onDragCancel = { onDragCancel() },
-                )
-            }
-            .padding(17.dp),
+        modifier = modifier.padding(17.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         KanbanCardTitle(kanbanCard.title)
@@ -71,7 +43,6 @@ fun KanbanCardItem(
                 thickness = Dp.Hairline,
                 color = Color.LightGray,
             )
-
             KanbanCardProfile(kanbanCard.assigneeName)
         }
     }
